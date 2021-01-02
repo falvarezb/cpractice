@@ -61,6 +61,8 @@ char** split(char *str, const char* delimiters) {
             tokens[num_tokens++] = pch;
             pch = strtok(NULL, delimiters);
         }
+
+        tokens = (char **) realloc(tokens, num_tokens * sizeof(tokens[0]));
     }
 
     return tokens;
