@@ -5,16 +5,16 @@
 void test_strip_blanks() {
     {
         const char *str = "  ";
-        const char *expected = NULL;
-        char *binary_instruction = strip_blanks(str);
-        TEST_CHECK_(binary_instruction  == expected, "strip_comments(%s)=%s but expected %s", str, binary_instruction, expected);      
+        const char *expected = "";
+        char *result = strip_blanks(str);
+        TEST_CHECK_(strcmp(result, expected) == 0, "strip_comments(%s)=%s but expected %s", str, result, expected);      
     }
 
     {
         const char *str = " x x x ";
         const char *expected = "xxx";
-        char *binary_instruction = strip_blanks(str);
-        TEST_CHECK_(strcmp(binary_instruction, expected) == 0, "strip_comments(%s)=%s but expected %s", str, binary_instruction, expected);      
+        char *result = strip_blanks(str);
+        TEST_CHECK_(strcmp(result, expected) == 0, "strip_comments(%s)=%s but expected %s", str, result, expected);      
     }
 }
 

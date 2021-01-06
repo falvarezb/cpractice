@@ -3,7 +3,7 @@
 
 /*
     Returns a newly allocated string without blank chars
-    If all chars in str are blank, returns NULL
+    If all chars in str are blank, returns empty string
 */
 char* strip_blanks(const char* str);
 
@@ -16,7 +16,7 @@ char* substring(const char *str, int from, int to);
 /*
     Split str into tokens and returns an array of tokens
 */
-char** split(char *str, const char *delimiter);
+char** split(char str[], const char *delimiter);
 
 
 #endif //STRLIBRARY_H
