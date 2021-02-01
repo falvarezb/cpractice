@@ -5,7 +5,7 @@ VALGRIND += --verbose --log-file=
 
 
 run: strlibrary
-	./strlibrary
+	./bin/strlibrary
 
 # strlibrary: strlibrary.o
 # 	$(GCC) $(CFLAGS) strlibrary.o -o $@ -lm
@@ -33,4 +33,4 @@ mathlibrarytest: mathlibrary1.o mathlibrarytest.o
 	$(GCC) $(CFLAGS) -c $*.c	
 
 clean:
-	rm -f outputs/* logs/* *.o strlibrarytest
+	rm -f outputs/* logs/* *.o binaries/*

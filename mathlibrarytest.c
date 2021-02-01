@@ -224,6 +224,51 @@ void test_count_digits() {
     }
 }
 
+void test_multiply() {
+    {
+        int x = 0;
+        int y = 2;
+        int expected = 0;
+        int result = multiply(x, y);
+        TEST_CHECK_(result  == expected, "multiply(%d,%d)=%d but expected %d", x, y , result, expected);      
+    }
+
+    {
+        int x = 2;
+        int y = 3;
+        int expected = 6;
+        int result = multiply(x, y);
+        TEST_CHECK_(result  == expected, "multiply(%d,%d)=%d but expected %d", x, y , result, expected);      
+    }
+
+    {
+        int x = 100000000;
+        int y = 20;
+        int expected = 2000000000;
+        int result = multiply(x, y);
+        TEST_CHECK_(result  == expected, "multiply(%d,%d)=%d but expected %d", x, y , result, expected);      
+    }
+}
+
+
+void test_division() {
+    {
+        int x = 0;
+        int y = 2;
+        int expected = 0;
+        int result = division(x, y);
+        TEST_CHECK_(result  == expected, "division(%d,%d)=%d but expected %d", x, y , result, expected);      
+    }
+
+    {
+        int x = 65;
+        int y = 5;
+        int expected = 13;
+        int result = division(x, y);
+        TEST_CHECK_(result  == expected, "division(%d,%d)=%d but expected %d", x, y , result, expected);      
+    }
+}
+
 
 TEST_LIST = {
     {"test_fib", test_fib},
@@ -231,5 +276,7 @@ TEST_LIST = {
     {"test_bin16", test_bin16},
     {"test_bin31", test_bin31},
     {"test_bin32", test_bin32},
-    {"test_count_digits", test_count_digits}
+    {"test_count_digits", test_count_digits},
+    {"test_multiply", test_multiply},
+    {"test_division", test_division}
 };
