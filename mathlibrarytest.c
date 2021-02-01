@@ -256,16 +256,16 @@ void test_division() {
         int x = 0;
         int y = 2;
         int expected = 0;
-        int result = division(x, y);
-        TEST_CHECK_(result  == expected, "division(%d,%d)=%d but expected %d", x, y , result, expected);      
+        int result = divide(x, y);
+        TEST_CHECK_(result  == expected, "divide(%d,%d)=%d but expected %d", x, y , result, expected);      
     }
 
     {
         int x = 65;
         int y = 5;
         int expected = 13;
-        int result = division(x, y);
-        TEST_CHECK_(result  == expected, "division(%d,%d)=%d but expected %d", x, y , result, expected);      
+        int result = divide(x, y);
+        TEST_CHECK_(result  == expected, "divide(%d,%d)=%d but expected %d", x, y , result, expected);      
     }
 }
 

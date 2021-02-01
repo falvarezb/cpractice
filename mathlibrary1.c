@@ -90,7 +90,7 @@ int multiply(size_t x, size_t y) {
 /*
     O(log) implementation
  */ 
-int division(size_t x, size_t y) {
+int divide(size_t x, size_t y) {
     size_t q = 0; //quotient    
     int byte_length_in_bits = 8;
     int sizeof_int_in_bits = byte_length_in_bits * sizeof(int);
@@ -109,7 +109,7 @@ int division(size_t x, size_t y) {
 
 // int main(int argc, char const *argv[])
 // {
-//     int result = division(65,5);
+//     int result = divide(65,5);
 //     printf("result=%d", result);
 //     return 0;
 // }

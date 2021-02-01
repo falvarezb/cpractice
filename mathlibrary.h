@@ -27,4 +27,4 @@ int multiply(size_t x, size_t y);
 /*
     integer division x/y, where x,y >= 0
 */
-int division(size_t x, size_t y);
+int divide(size_t x, size_t y);
