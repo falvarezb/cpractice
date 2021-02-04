@@ -61,9 +61,9 @@ char* bin(int n, int m) {
     return result;
 }
 
-int count_digits(int n) {
+int count_digits(size_t n, int base) {    
     int counter = 1;
-    while((n /= 10) > 0) {
+    while((n /= base) > 0) {
         counter++;
     }
     return counter;    
@@ -71,45 +71,51 @@ int count_digits(int n) {
 
 /*
     O(log) implementation
+    classic multiplication algorithm in binary
  */ 
-int multiply(size_t x, size_t y) {
-    size_t sum = 0;
-    size_t shiftedX = x;
-    int byte_length_in_bits = 8;
-    int sizeof_int_in_bits = byte_length_in_bits * sizeof(int); 
+int multiply(int x, int y) {
+    int sum = 0;
+    int shiftedX = x;
+    int number_digits = count_digits(y, 2);
 
-    for(int j=0; j<sizeof_int_in_bits; j++){
-        if(y & (1 << j)) {
+    int bit_selector = 1;
+    int digit_counter = 0;
+    while(digit_counter < number_digits){
+        if(y & bit_selector) {
             sum += shiftedX;
         }
+        bit_selector <<= 1;
         shiftedX <<= 1;
+        digit_counter++;
     }
     return sum;
 }
 
 /*
     O(log) implementation
+    classic division algorithm in binary
  */ 
 int divide(size_t x, size_t y) {
     size_t q = 0; //quotient    
-    int byte_length_in_bits = 8;
-    int sizeof_int_in_bits = byte_length_in_bits * sizeof(int);
-    size_t shiftedY = y << sizeof_int_in_bits;
+    int number_digits = count_digits(x, 2) - count_digits(y, 2);
+    size_t shiftedY = y << number_digits;
 
-    for(int j=sizeof_int_in_bits-1; j>=0; j--){
+    int digit_counter = 0;
+    while(digit_counter < number_digits){
         q <<= 1;    
         shiftedY >>= 1; 
         if(x >= shiftedY) {
             x -= shiftedY;            
             q++;
-        }        
+        }
+        digit_counter++;    
     }
     return q;
 }
 
 // int main(int argc, char const *argv[])
 // {
-//     int result = divide(65,5);
+//     int result = multiply(2,-3);
 //     printf("result=%d", result);
 //     return 0;
 // }

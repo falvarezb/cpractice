@@ -1,4 +1,4 @@
-#include <stdint.h>
+#include <stdio.h>
 
 /*
     Returns n-th term of Fibonacci sequence:
@@ -17,12 +17,12 @@ int fib(int n);
 char* bin(int n, int m);
 
 
-int count_digits(int n);
+int count_digits(size_t n, int base);
 
 /*
     x*y, where x,y >= 0
 */
-int multiply(size_t x, size_t y);
+int multiply(int x, int y);
 
 /*
     integer division x/y, where x,y >= 0

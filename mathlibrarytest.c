@@ -203,24 +203,43 @@ void test_bin32(void) {
 
 void test_count_digits() {
     {
-        int n = 0;
+        size_t n = 0;
+        int base = 10;
         int expected = 1;
-        int result = count_digits(n);
-        TEST_CHECK_(result  == expected, "count_digits(%d)=%d but expected %d", n, result, expected);      
+        int result = count_digits(n, base);
+        TEST_CHECK_(result  == expected, "count_digits(%zu,%d)=%d but expected %d", n, base, result, expected);      
     }
 
     {
-        int n = 11;
+        size_t n = 10;
+        int base = 10;
         int expected = 2;
-        int result = count_digits(n);
-        TEST_CHECK_(result  == expected, "count_digits(%d)=%d but expected %d", n, result, expected); 
+        int result = count_digits(n, base);
+        TEST_CHECK_(result  == expected, "count_digits(%zu,%d)=%d but expected %d", n, base, result, expected); 
     }
 
     {
-        int n = 230;
+        size_t n = -11;
+        int base = 10;
+        int expected = 20;
+        int result = count_digits(n, base);
+        TEST_CHECK_(result  == expected, "count_digits(%zu,%d)=%d but expected %d", n, base, result, expected); 
+    }
+
+    {
+        size_t n = -11;
+        int base = 2;
+        int expected = 64;
+        int result = count_digits(n, base);
+        TEST_CHECK_(result  == expected, "count_digits(%zu,%d)=%d but expected %d", n, base, result, expected); 
+    }
+
+    {
+        size_t n = 230;
+        int base = 10;
         int expected = 3;
-        int result = count_digits(n);
-        TEST_CHECK_(result  == expected, "count_digits(%d)=%d but expected %d", n, result, expected); 
+        int result = count_digits(n, base);
+        TEST_CHECK_(result  == expected, "count_digits(%zu,%d)=%d but expected %d", n, base, result, expected); 
     }
 }
 
@@ -235,8 +254,8 @@ void test_multiply() {
 
     {
         int x = 2;
-        int y = 3;
-        int expected = 6;
+        int y = -3;
+        int expected = -6;
         int result = multiply(x, y);
         TEST_CHECK_(result  == expected, "multiply(%d,%d)=%d but expected %d", x, y , result, expected);      
     }

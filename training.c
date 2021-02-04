@@ -4,14 +4,16 @@ size_t count_chars();
 unsigned getbits(unsigned x, int p, int n);
 int bitcount(unsigned x);
 int bitcount0(unsigned x);
+unsigned int two_complement(unsigned int x);
 
 int main(int argc, char const *argv[])
 {
     /* code */ 
-    printf("chars:%zu\n", count_chars());
+    //printf("chars:%zu\n", count_chars());
     printf("last bits:%u\n", getbits(37, 3, 3));
     printf("bitcount:%d\n", bitcount(37));
     printf("bitcount0:%d\n", bitcount0(5));
+    printf("two_complement:%u\n", two_complement(-5));
     return 0;
 }
 
@@ -55,4 +57,10 @@ int bitcount0(unsigned x)
             b++;
     return b;
 }
+
+unsigned int two_complement(unsigned int x) {
+    return x;
+}
+
+
 
