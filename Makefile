@@ -18,6 +18,9 @@ strtest: strlibrarytest
 
 mathtest: mathlibrarytest
 	./mathlibrarytest
+
+biginttest: bigint_test
+	./bigint_test
 	
 
 # $@ means the symbol before the :
@@ -26,6 +29,9 @@ strlibrarytest: strlibrary.o strlibrarytest.o
 
 mathlibrarytest: mathlibrary1.o mathlibrarytest.o
 	$(GCC) $(CFLAGS) mathlibrary1.o mathlibrarytest.o -o $@ -lm
+
+bigint_test: bigint.o biginttest.o
+	$(GCC) $(CFLAGS) bigint.o biginttest.o -o $@ -lm
 
 
 # if an object ﬁle is needed, compile the corresponding .c ﬁle
