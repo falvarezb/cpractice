@@ -2,22 +2,36 @@
 #include "bigint.h"
 #include <stddef.h>
 #include <math.h>
+#include <string.h>
 
-void test_from_string() 
+void test_from_to_string() 
 {
     {
         char* str = "123";
         size_t expected[] = {123};
         size_t* result = from_string(str);
-        TEST_CHECK_(result[0] == expected[0], "from_string(%s)[0]=%lu but expected %lu", str, result[0], expected[0]);      
+        char* result2 = to_string(result, 1);
+        TEST_CHECK_(result[0] == expected[0], "from_string(%s)[0]=%lu but expected %lu", str, result[0], expected[0]);
+        TEST_CHECK_(strcmp(result2, str) == 0, "result %s but expected %s", result2, str);    
     }
 
     {
         char* str = "12345678901234567899";
-        size_t expected[] = {123456789012345678, 99};
+        size_t expected[] = {345678901234567899, 12};
         size_t* result = from_string(str);
+        char* result2 = to_string(result, 2);
         TEST_CHECK_(result[0] == expected[0], "from_string(%s)[0]=%lu but expected %lu", str, result[0], expected[0]);
-        TEST_CHECK_(result[1] == expected[1], "from_string(%s)[1]=%lu but expected %lu", str, result[1], expected[1]);    
+        TEST_CHECK_(result[1] == expected[1], "from_string(%s)[1]=%lu but expected %lu", str, result[1], expected[1]);  
+        TEST_CHECK_(strcmp(result2, str) == 0, "result %s but expected %s", result2, str);    
+    }
+
+        {
+        char* str = "123456789012345678";
+        size_t expected[] = {123456789012345678};
+        size_t* result = from_string(str);
+        char* result2 = to_string(result, 1);
+        TEST_CHECK_(result[0] == expected[0], "from_string(%s)[0]=%lu but expected %lu", str, result[0], expected[0]);         
+        TEST_CHECK_(strcmp(result2, str) == 0, "result %s but expected %s", result2, str);    
     }
 }
 
@@ -48,6 +62,6 @@ void test_sum()
 
 
 TEST_LIST = {
-    {"test_from_string", test_from_string},
+    {"test_from_to_string", test_from_to_string},
     {"test_sum", test_sum}
 };
