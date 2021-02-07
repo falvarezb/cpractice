@@ -4,6 +4,28 @@
 #include <string.h>
 #include "bigint.h"
 
+void build_bigint_str(char *result, int from, size_t big_digit)
+{
+    while (big_digit > 0)
+    {                
+        result[from++] = '0' + (big_digit % 10);
+        big_digit /= 10;
+    }
+    result[from] = '\0';
+}
+
+void build_bigint_str2(char *result, int from, size_t big_digit)
+{
+    int local_digit_counter = 18;    
+    while (big_digit > 0)
+    {
+        int idx = from + local_digit_counter;                
+        result[idx] = '0' + (big_digit % 10);
+        big_digit /= 10;
+        local_digit_counter--;
+    }
+}
+
 /*
     bigint[0] is the least significat digit
     bigint[i] i=0...n-2 have exactly 18 decimal digits
@@ -16,40 +38,27 @@ char* to_string(size_t *bigint, int num_big_digits)
     char* str = (char*) malloc((num_big_digits * 18 + 1) * sizeof(char));
     if (str != NULL)
     {
-        int global_digit_counter = 0;
+        
 
-        //logic to deal with bigint[n-1] 
-        int local_digit_counter = 0;
-        char local_str[18];
+        //bigint[n-1]         
+        char local_str[18+1];
         size_t big_digit = bigint[num_big_digits-1];
-        while (big_digit > 0)
-        {                
-            local_str[local_digit_counter++] = '0' + (big_digit % 10);
-            big_digit /= 10;
-        }
+        build_bigint_str(local_str, 0, big_digit);
         //reverse digits order
-        for (int i = local_digit_counter-1; i >= 0; i--)
+        for (int i = strlen(local_str)-1; i >= 0; i--)
         {
-            str[global_digit_counter++] = local_str[i];
+            str[strlen(local_str)-1 - i] = local_str[i];
         }
 
-        int first_element_offset = global_digit_counter - 1;
+        int first_element_offset = strlen(local_str) - 1;
         
         //bigint[0]...bigint[n-2]
         for (int j=1; j <= num_big_digits-1; j++)
         {
-            local_digit_counter = 18;
             big_digit = bigint[num_big_digits-1-j];
-            while (big_digit > 0)
-            {
-                int idx = first_element_offset + 18 * (j-1) + local_digit_counter;                
-                str[idx] = '0' + (big_digit % 10);
-                big_digit /= 10;
-                local_digit_counter--;
-                global_digit_counter++;
-            }
+            build_bigint_str2(str, first_element_offset + 18 * (j-1), big_digit);
         }
-        str[global_digit_counter] = '\0';
+        str[num_big_digits * 18 + 1] = '\0';
     }    
     return str;   
 }
