@@ -7,11 +7,11 @@
 /*
     Copies the digits of big_digit into the corresponding positions of 'result'
     Copy is done backwards (right to left) so that leftmost digits are the most significant ones
-    If number of digits is less than 18, the result is padded with 0s to the left
+    If number of digits is less than BASE_POWER, the result is padded with 0s to the left
 */
 void build_bigint_str(char *result, int from, size_t big_digit)
 {
-    for (int i = 18-1; i >= 0; i--)
+    for (int i = BASE_EXP-1; i >= 0; i--)
     {
         int idx = from + i;                
         result[idx] = '0' + (big_digit % 10);
@@ -21,8 +21,8 @@ void build_bigint_str(char *result, int from, size_t big_digit)
 
 /*
     bigint[0] is the least significat digit
-    bigint[i] i=0...n-2 have exactly 18 decimal digits
-    bigint[n-1] has up to 18 decimal digits
+    bigint[i] i=0...n-2 have exactly BASE_EXP decimal digits
+    bigint[n-1] has up to BASE_EXP decimal digits
 
     Note: inside bigint[i] (for all i), lestmost digits are the most significant ones
 
@@ -30,20 +30,22 @@ void build_bigint_str(char *result, int from, size_t big_digit)
 */
 char* to_string(size_t *bigint, int num_big_digits)
 {
-    char* str = (char*) malloc((num_big_digits * 18 + 1) * sizeof(char));
+    char* str = (char*) malloc((num_big_digits * BASE_EXP + 1) * sizeof(char));
     if (str != NULL)
     {        
         for (int j=0; j < num_big_digits; j++)
         {
             size_t big_digit = bigint[num_big_digits-1-j];
-            build_bigint_str(str, 18 * j, big_digit);
+            build_bigint_str(str, BASE_EXP * j, big_digit);
         }
-        str[num_big_digits * 18] = '\0';
+        str[num_big_digits * BASE_EXP] = '\0';
     }    
     return str;   
 }
 
-
+/*
+    Converts the specified chars of 'str' into an integer 
+*/
 size_t build_bigint(char* str, int from, int n_digits)
 {
     size_t big_digit = 0;
@@ -61,15 +63,15 @@ size_t build_bigint(char* str, int from, int n_digits)
 
 /*
     bigint[0] is the least significat digit
-    bigint[i] i=0...n-2 have exactly 18 decimal digits
-    bigint[n-1] has up to 18 decimal digits
+    bigint[i] i=0...n-2 have exactly BASE_EXP decimal digits
+    bigint[n-1] has up to BASE_EXP decimal digits
 
     "456123456789012345678" --> [123456789012345678,456]
 */
 size_t* from_string(char* str) 
 {
-    int num_big_digits = strlen(str) / 18;
-    if (strlen(str) % 18)//digits of bigint[n-1]
+    int num_big_digits = strlen(str) / BASE_EXP;
+    if (strlen(str) % BASE_EXP)//digits of bigint[n-1]
     {
         num_big_digits++;
     }
@@ -81,7 +83,7 @@ size_t* from_string(char* str)
 
         //bigint[n-1] 
         int num_msb_decimal_digits;
-        if ((num_msb_decimal_digits = strlen(str) % 18))
+        if ((num_msb_decimal_digits = strlen(str) % BASE_EXP))
         {
             bigint[big_digit_counter--] = build_bigint(str, 0, num_msb_decimal_digits);
         }
@@ -91,8 +93,8 @@ size_t* from_string(char* str)
 
         while (big_digit_counter >= 0)
         {
-            bigint[big_digit_counter--] = build_bigint(str, str_idx, 18);
-            str_idx += 18;
+            bigint[big_digit_counter--] = build_bigint(str, str_idx, BASE_EXP);
+            str_idx += BASE_EXP;
         }        
     }
     return bigint;
@@ -101,12 +103,12 @@ size_t* from_string(char* str)
 /*
     classical algorithm of the sum
 
-    base = 10^18 (small enough to ensure that w[i] fits in size_t)
-    digits = [0, 10^18-1], u[0],v[0],w[0] contain the least significant digit
+    base = 10^BASE_EXP
+    digits = [0, 10^BASE_EXP-1], u[0],v[0],w[0] contain the least significant digit
     decimal places = as many as we want (the only limit is the physical memory of the machine)
 */
 size_t* sum(int num_digits, size_t *u, size_t *v, size_t *w) {
-    size_t base = 1000000000000000000lu;//10^18
+    size_t base = 1000000000000000000lu;//10^BASE_EXP
     int carry = 0;
     for (int i = 0; i < num_digits; i++) {
         w[i] = u[i] + v[i] + carry;
@@ -121,7 +123,7 @@ size_t* sum(int num_digits, size_t *u, size_t *v, size_t *w) {
 }
 
 // int main(int argc, char const *argv[]) {
-//     // size_t a = 576460752303423488lu;//2**59 (18 digits)
+//     // size_t a = 576460752303423488lu;//2**59 (BASE_EXP digits)
 //     // size_t b = 8764607lu;
 //     // size_t u[] = {a,b};
 //     // size_t v[] = {a,b};
@@ -135,10 +137,10 @@ size_t* sum(int num_digits, size_t *u, size_t *v, size_t *w) {
 //     // } 
 //     // printf("\nhello %lu\n", a+a);   
 //     size_t *result = from_string("000000000000000456123456789012345678");    
-//     printf("result=%lu\n", from_string("000000000000000456123456789012345678")[1]);
-//     size_t bigint[] = {123456789012345678, 456};
-//     char* result2 = to_string(result,2);
-//     printf("%s", result2);
+//     printf("result=%lu\n", from_string("678")[0]);
+//     // size_t bigint[] = {123456789012345678, 456};
+//     // char* result2 = to_string(result,2);
+//     // printf("%s", result2);
 //     return 0;
 //     //0000000000000000456123456789012345678
 // }
