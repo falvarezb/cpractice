@@ -7,7 +7,7 @@
 void test_from_to_string() 
 {
     {
-        char* str = "123";
+        char* str = "000000000000000123";
         size_t expected[] = {123};
         size_t* result = from_string(str);
         char* result2 = to_string(result, 1);
@@ -16,7 +16,7 @@ void test_from_to_string()
     }
 
     {
-        char* str = "12345678901234567899";
+        char* str = "000000000000000012345678901234567899";
         size_t expected[] = {345678901234567899, 12};
         size_t* result = from_string(str);
         char* result2 = to_string(result, 2);

@@ -4,26 +4,19 @@
 #include <string.h>
 #include "bigint.h"
 
+/*
+    Copies the digits of big_digit into the corresponding positions of 'result'
+    Copy is done backwards (right to left) so that leftmost digits are the most significant ones
+    If number of digits is less than 18, the result is padded with 0s to the left
+*/
 void build_bigint_str(char *result, int from, size_t big_digit)
 {
-    while (big_digit > 0)
-    {                
-        result[from++] = '0' + (big_digit % 10);
-        big_digit /= 10;
-    }
-    result[from] = '\0';
-}
-
-void build_bigint_str2(char *result, int from, size_t big_digit)
-{
-    int local_digit_counter = 18;    
-    while (big_digit > 0)
+    for (int i = 18-1; i >= 0; i--)
     {
-        int idx = from + local_digit_counter;                
+        int idx = from + i;                
         result[idx] = '0' + (big_digit % 10);
         big_digit /= 10;
-        local_digit_counter--;
-    }
+    }    
 }
 
 /*
@@ -31,34 +24,21 @@ void build_bigint_str2(char *result, int from, size_t big_digit)
     bigint[i] i=0...n-2 have exactly 18 decimal digits
     bigint[n-1] has up to 18 decimal digits
 
-    [123456789012345678,456] --> "456123456789012345678"
+    Note: inside bigint[i] (for all i), lestmost digits are the most significant ones
+
+    [123456789012345678,456] --> "000000000000000456123456789012345678"
 */
 char* to_string(size_t *bigint, int num_big_digits)
 {
     char* str = (char*) malloc((num_big_digits * 18 + 1) * sizeof(char));
     if (str != NULL)
-    {
-        
-
-        //bigint[n-1]         
-        char local_str[18+1];
-        size_t big_digit = bigint[num_big_digits-1];
-        build_bigint_str(local_str, 0, big_digit);
-        //reverse digits order
-        for (int i = strlen(local_str)-1; i >= 0; i--)
+    {        
+        for (int j=0; j < num_big_digits; j++)
         {
-            str[strlen(local_str)-1 - i] = local_str[i];
+            size_t big_digit = bigint[num_big_digits-1-j];
+            build_bigint_str(str, 18 * j, big_digit);
         }
-
-        int first_element_offset = strlen(local_str) - 1;
-        
-        //bigint[0]...bigint[n-2]
-        for (int j=1; j <= num_big_digits-1; j++)
-        {
-            big_digit = bigint[num_big_digits-1-j];
-            build_bigint_str2(str, first_element_offset + 18 * (j-1), big_digit);
-        }
-        str[num_big_digits * 18 + 1] = '\0';
+        str[num_big_digits * 18] = '\0';
     }    
     return str;   
 }
@@ -76,7 +56,7 @@ size_t build_bigint(char* str, int from, int n_digits)
         decimal_digit = atoi(c);
         big_digit = big_digit * 10 + decimal_digit;
     }
-    return big_digit;    
+    return big_digit; 
 }
 
 /*
@@ -153,9 +133,12 @@ size_t* sum(int num_digits, size_t *u, size_t *v, size_t *w) {
 //     // for (int i = num_digits; i >= 0; i--) {
 //     //     printf("%lu", w[i]);
 //     // } 
-//     // printf("\nhello %lu\n", a+a);       
-//     printf("result=%lu\n", from_string("123456789012345678")[0]);
-//     //size_t bigint[] = {123456789012345678, 456};
-//     //printf("%s", to_string(bigint,2));
+//     // printf("\nhello %lu\n", a+a);   
+//     size_t *result = from_string("000000000000000456123456789012345678");    
+//     printf("result=%lu\n", from_string("000000000000000456123456789012345678")[1]);
+//     size_t bigint[] = {123456789012345678, 456};
+//     char* result2 = to_string(result,2);
+//     printf("%s", result2);
 //     return 0;
+//     //0000000000000000456123456789012345678
 // }
