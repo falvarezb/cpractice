@@ -58,13 +58,12 @@ char* to_string(size_t *bigint, int num_big_digits)
 size_t build_bigint(char* str, int from, int n_digits)
 {
     size_t big_digit = 0;
-    char c[2];
+    char c[2] = {'0', '\0'};
     int decimal_digit;
     
     for (int i = from; i < (from + n_digits); i++)
     {
-        c[0] = str[i];
-        c[1] = '\0';
+        c[0] = str[i];        
         decimal_digit = atoi(c);
         big_digit = big_digit * 10 + decimal_digit;
     }
@@ -81,7 +80,7 @@ size_t build_bigint(char* str, int from, int n_digits)
 size_t* from_string(char* str) 
 {
     int num_big_digits = strlen(str) / 18;
-    if (strlen(str) % 18)
+    if (strlen(str) % 18)//digits of bigint[n-1]
     {
         num_big_digits++;
     }
@@ -95,8 +94,7 @@ size_t* from_string(char* str)
         int num_msb_decimal_digits;
         if ((num_msb_decimal_digits = strlen(str) % 18))
         {
-            bigint[num_big_digits-1] = build_bigint(str, 0, num_msb_decimal_digits);
-            big_digit_counter--;
+            bigint[big_digit_counter--] = build_bigint(str, 0, num_msb_decimal_digits);
         }
     
         //bigint[0]...bigint[n-2]        
