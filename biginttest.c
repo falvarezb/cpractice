@@ -9,28 +9,28 @@ void test_from_to_string()
     {
         char* str = "000000000000000123";
         size_t expected[] = {123};
-        size_t* result = from_string(str);
-        char* result2 = to_string(result, 1);
-        TEST_CHECK_(result[0] == expected[0], "from_string(%s)[0]=%lu but expected %lu", str, result[0], expected[0]);
+        struct bigint result = from_string(str);
+        char* result2 = to_string(result);
+        TEST_CHECK_(result.number[0] == expected[0], "from_string(%s)[0]=%lu but expected %lu", str, result.number[0], expected[0]);
         TEST_CHECK_(strcmp(result2, str) == 0, "result %s but expected %s", result2, str);    
     }
 
     {
         char* str = "000000000000000012345678901234567899";
         size_t expected[] = {345678901234567899, 12};
-        size_t* result = from_string(str);
-        char* result2 = to_string(result, 2);
-        TEST_CHECK_(result[0] == expected[0], "from_string(%s)[0]=%lu but expected %lu", str, result[0], expected[0]);
-        TEST_CHECK_(result[1] == expected[1], "from_string(%s)[1]=%lu but expected %lu", str, result[1], expected[1]);  
+        struct bigint result = from_string(str);
+        char* result2 = to_string(result);
+        TEST_CHECK_(result.number[0] == expected[0], "from_string(%s)[0]=%lu but expected %lu", str, result.number[0], expected[0]);
+        TEST_CHECK_(result.number[1] == expected[1], "from_string(%s)[1]=%lu but expected %lu", str, result.number[1], expected[1]);  
         TEST_CHECK_(strcmp(result2, str) == 0, "result %s but expected %s", result2, str);    
     }
 
     {
         char* str = "123456789012345678";
         size_t expected[] = {123456789012345678};
-        size_t* result = from_string(str);
-        char* result2 = to_string(result, 1);
-        TEST_CHECK_(result[0] == expected[0], "from_string(%s)[0]=%lu but expected %lu", str, result[0], expected[0]);         
+        struct bigint result = from_string(str);
+        char* result2 = to_string(result);
+        TEST_CHECK_(result.number[0] == expected[0], "from_string(%s)[0]=%lu but expected %lu", str, result.number[0], expected[0]);         
         TEST_CHECK_(strcmp(result2, str) == 0, "result %s but expected %s", result2, str);    
     }
 }
@@ -39,33 +39,36 @@ void test_to_from_string()
 {
     {
         char* expected = "000000000000000123";
-        size_t bigint[] = {123};
-        char* result = to_string(bigint, 1);
-        size_t* result2 = from_string(result);
+        size_t number[] = {123};
+        struct bigint bigint = {number, 1};
+        char* result = to_string(bigint);
+        struct bigint result2 = from_string(result);
         
         TEST_CHECK_(strcmp(result, expected) == 0, "to_string()=%s but expected %s", result, expected);
-        TEST_CHECK_(result2[0] == bigint[0], "result %lu but expected %lu", result2[0], bigint[0]);    
+        TEST_CHECK_(result2.number[0] == bigint.number[0], "result %lu but expected %lu", result2.number[0], bigint.number[0]);    
     }
 
     {
         char* expected = "000000000000000012345678901234567899";
-        size_t bigint[] = {345678901234567899, 12};
-        char* result = to_string(bigint, 2);
-        size_t* result2 = from_string(result);
+        size_t number[] = {345678901234567899, 12};
+        struct bigint bigint = {number, 2};
+        char* result = to_string(bigint);
+        struct bigint result2 = from_string(result);
         
         TEST_CHECK_(strcmp(result, expected) == 0, "to_string()=%s but expected %s", result, expected);
-        TEST_CHECK_(result2[0] == bigint[0], "result %lu but expected %lu", result2[0], bigint[0]);   
-        TEST_CHECK_(result2[1] == bigint[1], "result %lu but expected %lu", result2[1], bigint[1]);  
+        TEST_CHECK_(result2.number[0] == bigint.number[0], "result %lu but expected %lu", result2.number[0], bigint.number[0]);   
+        TEST_CHECK_(result2.number[1] == bigint.number[1], "result %lu but expected %lu", result2.number[1], bigint.number[1]);  
     }
 
     {
         char* expected = "123456789012345678";
-        size_t bigint[] = {123456789012345678};
-        char* result = to_string(bigint, 1);
-        size_t* result2 = from_string(result);
+        size_t number[] = {123456789012345678};
+        struct bigint bigint  = {number, 1};
+        char* result = to_string(bigint);
+        struct bigint result2 = from_string(result);
         
         TEST_CHECK_(strcmp(result, expected) == 0, "to_string()=%s but expected %s", result, expected);
-        TEST_CHECK_(result2[0] == bigint[0], "result %lu but expected %lu", result2[0], bigint[0]);
+        TEST_CHECK_(result2.number[0] == bigint.number[0], "result %lu but expected %lu", result2.number[0], bigint.number[0]);
     }
 }
 
@@ -94,9 +97,27 @@ void test_sum()
     }
 }
 
+void test_bigsum(){
+    {
+        char* a = "125858548944446868589689484398988889";
+        char* b= "4404588898938984849498448948989";
+        char* expected = "125862953533345807574538982847937878";
+        char* result = bigsum(a, b);
+        TEST_CHECK_(strcmp(result, expected) == 0, "bigsum(%s, %s)=%s but expected %s", a, b, result, expected);
+    }
+
+    {
+        char* a = "-1";
+        char* b= "12";
+        char* expected = "13";
+        char* result = bigsum(a, b);
+        TEST_CHECK_(strcmp(result, expected) == 0, "bigsum(%s, %s)=%s but expected %s", a, b, result, expected);
+    }
+}
 
 TEST_LIST = {
     {"test_from_to_string", test_from_to_string},
     {"test_to_from_string", test_to_from_string},
-    {"test_sum", test_sum}
+    {"test_sum", test_sum},
+    {"test_bigsum", test_bigsum}
 };
