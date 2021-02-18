@@ -5,6 +5,9 @@
 #include "bigint.h"
 #include <assert.h>
 
+const int BASE_EXP = 18; //small enough to ensure that the individual digits of bigint fit in size_t
+const unsigned long BASE = 1000000000000000000; //10^BASE_EXP
+
 /*
     Copies the digits of big_digit into the corresponding positions of 'result'
     Copy is done backwards (right to left) so that leftmost digits are the most significant ones
@@ -117,19 +120,43 @@ char* remove_least_significant_zeros(char* str) {
     base = 10^BASE_EXP
     digits = [0, 10^BASE_EXP-1], u[0],v[0],w[0] contain the least significant digit
     decimal places = as many as we want (the only limit is the physical memory of the machine)
+    w = u + v
 */
 size_t* sum(int num_digits, size_t *u, size_t *v, size_t *w) { 
-    size_t base = 1000000000000000000lu;//10^BASE_EXP
     int carry = 0;
     for (int i = 0; i < num_digits; i++) {
         w[i] = u[i] + v[i] + carry;
         carry = 0;
-        if(w[i] >= base) { //overflow
-            w[i] -= base;
+        if(w[i] >= BASE) { //overflow
+            w[i] -= BASE;
             carry = 1;
         }
     }
     w[num_digits] = carry;
+    return w;
+}
+
+/*
+    classical algorithm of the subtraction
+
+    base = 10^BASE_EXP
+    digits = [0, 10^BASE_EXP-1], u[0],v[0],w[0] contain the least significant digit
+    decimal places = as many as we want (the only limit is the physical memory of the machine)
+    w = u - v, where u >= v
+*/
+size_t* subtract(int num_digits, size_t *u, size_t *v, size_t *w) {     
+    int borrow = 0;
+    for (int i = 0; i < num_digits; i++) {
+        size_t subtrahend = v[i] + borrow;
+        borrow = 0;
+        if (u[i] < subtrahend) { //overflow
+            w[i] = u[i] + BASE - subtrahend;
+            borrow = 1;
+        }
+        else {
+            w[i] = u[i] - subtrahend;
+        }
+    }
     return w;
 }
 
@@ -149,6 +176,45 @@ char* bigsum(char* a, char* b) {
     size_t result[bigint_a.num_digits + 1];
     sum(bigint_a.num_digits, bigint_a.number, bigint_b.number, result);
     return remove_least_significant_zeros(to_string((struct bigint) {result, bigint_a.num_digits+1}));
+}
+
+char* bigsubtract(char* a, char* b) {
+    struct bigint bigint_a = from_string(a);
+    struct bigint bigint_b = from_string(b);
+
+    if (bigint_a.num_digits < bigint_b.num_digits) {
+        bigint_a.number = pad_bigint(bigint_a.num_digits, bigint_b.num_digits, bigint_a.number);
+        bigint_a.num_digits = bigint_b.num_digits;
+    }
+    else if (bigint_a.num_digits > bigint_b.num_digits) {
+        bigint_b.number = pad_bigint(bigint_b.num_digits, bigint_a.num_digits, bigint_b.number);
+        bigint_b.num_digits = bigint_a.num_digits;
+    }
+
+    size_t result[bigint_a.num_digits];
+    size_t j = bigint_a.num_digits-1;
+    while (j >= 0 && bigint_a.number[j] == bigint_b.number[j]) {
+        j--;
+    }    
+
+    if (j == -1) {
+        return "0";
+    }    
+    else if (bigint_a.number[j] > bigint_b.number[j]) {
+        subtract(bigint_a.num_digits, bigint_a.number, bigint_b.number, result);
+        return remove_least_significant_zeros(to_string((struct bigint) {result, bigint_a.num_digits}));
+    }
+    else {        
+        subtract(bigint_a.num_digits, bigint_b.number, bigint_a.number, result);        
+        char* result_str = remove_least_significant_zeros(to_string((struct bigint) {result, bigint_a.num_digits}));
+        char* signed_result = (char*) malloc((strlen(result_str)+ 2) * sizeof(char));
+        signed_result[0] = '-';
+        signed_result[1] = '\0';
+        return strcat(signed_result, result_str);
+    }
+    
+
+    
 }
 
 // int main(int argc, char const *argv[]) {
@@ -171,7 +237,7 @@ char* bigsum(char* a, char* b) {
 //     // char* result2 = to_string(result,2);
 //     // printf("%s", result2);
 
-//     char *result = bigsum("-123456789012345678", "-1");
+//     char *result = bigsubtract("125858548944446868589689484398988889", "4404588898938984849498448948989");
 //     printf("result=%s\n", result);
 //     return 0;
 //     //0000000000000000456123456789012345678
