@@ -192,7 +192,7 @@ char* bigsubtract(char* a, char* b) {
     }
 
     size_t result[bigint_a.num_digits];
-    size_t j = bigint_a.num_digits-1;
+    int j = bigint_a.num_digits-1;
     while (j >= 0 && bigint_a.number[j] == bigint_b.number[j]) {
         j--;
     }    
@@ -237,7 +237,7 @@ char* bigsubtract(char* a, char* b) {
 //     // char* result2 = to_string(result,2);
 //     // printf("%s", result2);
 
-//     char *result = bigsubtract("125858548944446868589689484398988889", "4404588898938984849498448948989");
+//     char *result = bigsubtract("12", "12");
 //     printf("result=%s\n", result);
 //     return 0;
 //     //0000000000000000456123456789012345678

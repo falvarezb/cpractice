@@ -155,6 +155,14 @@ void test_bigsubtract(){
         char* result = bigsubtract(a, b);
         TEST_CHECK_(strcmp(result, expected) == 0, "bigsubtract(%s, %s)=%s but expected %s", a, b, result, expected);
     }
+
+    {
+        char* a = "12";
+        char* b= "12";
+        char* expected = "0";
+        char* result = bigsubtract(a, b);
+        TEST_CHECK_(strcmp(result, expected) == 0, "bigsubtract(%s, %s)=%s but expected %s", a, b, result, expected);
+    }
 }
 
 TEST_LIST = {
