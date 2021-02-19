@@ -110,6 +110,16 @@ void test_subtract()
     }
 
     {
+        size_t u[] = {3};
+        size_t v[] = {3};
+        int num_digits = fmax(sizeof(u)/sizeof(u[0]), sizeof(v)/sizeof(v[0]));
+        size_t result[num_digits];
+        subtract(num_digits, u, v, result);
+        size_t expected[] = {0};
+        TEST_CHECK_(result[0] == expected[0], "subtract()[0]=%lu but expected %lu", result[0], expected[0]);
+    }
+
+    {
         size_t u[] = {123456789012345678lu, 576839484849498888lu};
         size_t v[] = {987654321098765432lu, 174857487482847488lu};
         int num_digits = fmax(sizeof(u)/sizeof(u[0]), sizeof(v)/sizeof(v[0]));
@@ -134,6 +144,14 @@ void test_bigsum(){
         char* a = "-1";
         char* b= "12";
         char* expected = "13";
+        char* result = bigsum(a, b);
+        TEST_CHECK_(strcmp(result, expected) == 0, "bigsum(%s, %s)=%s but expected %s", a, b, result, expected);
+    }
+
+    {
+        char* a = "0";
+        char* b= "0";
+        char* expected = "0";
         char* result = bigsum(a, b);
         TEST_CHECK_(strcmp(result, expected) == 0, "bigsum(%s, %s)=%s but expected %s", a, b, result, expected);
     }

@@ -4,8 +4,9 @@
 #include <string.h>
 #include "bigint.h"
 #include <assert.h>
+#include <stdbool.h>
 
-const int BASE_EXP = 18; //small enough to ensure that the individual digits of bigint fit in size_t
+const int BASE_EXP = 18;                        //small enough to ensure that the individual digits of bigint fit in size_t
 const unsigned long BASE = 1000000000000000000; //10^BASE_EXP
 
 /*
@@ -13,12 +14,14 @@ const unsigned long BASE = 1000000000000000000; //10^BASE_EXP
     Copy is done backwards (right to left) so that leftmost digits are the most significant ones
     If number of digits is less than BASE_POWER, the result is padded with 0s to the left
 */
-void build_bigint_str(char *result, int from, size_t big_digit) {
-    for (int i = BASE_EXP-1; i >= 0; i--) {
-        int idx = from + i;                
+void build_bigint_str(char *result, int from, size_t big_digit)
+{
+    for (int i = BASE_EXP - 1; i >= 0; i--)
+    {
+        int idx = from + i;
         result[idx] = '0' + (big_digit % 10);
         big_digit /= 10;
-    }    
+    }
 }
 
 /*
@@ -30,32 +33,37 @@ void build_bigint_str(char *result, int from, size_t big_digit) {
 
     [123456789012345678,456] --> "000000000000000456123456789012345678"
 */
-char* to_string(struct bigint bigint) {
-    char* str = (char*) malloc((bigint.num_digits * BASE_EXP + 1) * sizeof(char));
-    if (str != NULL) {        
-        for (int j=0; j < bigint.num_digits; j++) {
-            size_t big_digit = bigint.number[bigint.num_digits-1-j];
+char *to_string(struct bigint bigint)
+{
+    char *str = (char *)malloc((bigint.num_digits * BASE_EXP + 1) * sizeof(char));
+    if (str != NULL)
+    {
+        for (int j = 0; j < bigint.num_digits; j++)
+        {
+            size_t big_digit = bigint.number[bigint.num_digits - 1 - j];
             build_bigint_str(str, BASE_EXP * j, big_digit);
         }
         str[bigint.num_digits * BASE_EXP] = '\0';
-    }    
-    return str;   
+    }
+    return str;
 }
 
 /*
     Converts the specified chars of 'str' into an integer 
 */
-size_t build_bigint(char* str, int from, int n_digits) {
+size_t build_bigint(char *str, int from, int n_digits)
+{
     size_t big_digit = 0;
     char c[2] = {'0', '\0'};
     int decimal_digit;
-    
-    for (int i = from; i < (from + n_digits); i++) {
-        c[0] = str[i];        
+
+    for (int i = from; i < (from + n_digits); i++)
+    {
+        c[0] = str[i];
         decimal_digit = atoi(c);
         big_digit = big_digit * 10 + decimal_digit;
     }
-    return big_digit; 
+    return big_digit;
 }
 
 /*
@@ -65,29 +73,34 @@ size_t build_bigint(char* str, int from, int n_digits) {
 
     "456123456789012345678" --> [123456789012345678,456]
 */
-struct bigint from_string(char* str) {
+struct bigint from_string(char *str)
+{
     int num_big_digits = strlen(str) / BASE_EXP;
-    if (strlen(str) % BASE_EXP) { //digits of bigint[n-1]
+    if (strlen(str) % BASE_EXP)
+    { //digits of bigint[n-1]
         num_big_digits++;
     }
-    
-    size_t *bigint = (size_t*) malloc(num_big_digits * sizeof(size_t));
-    if (bigint != NULL) {
+
+    size_t *bigint = (size_t *)malloc(num_big_digits * sizeof(size_t));
+    if (bigint != NULL)
+    {
         int big_digit_counter = num_big_digits - 1;
 
-        //bigint[n-1] 
+        //bigint[n-1]
         int num_msb_decimal_digits;
-        if ((num_msb_decimal_digits = strlen(str) % BASE_EXP)) {
+        if ((num_msb_decimal_digits = strlen(str) % BASE_EXP))
+        {
             bigint[big_digit_counter--] = build_bigint(str, 0, num_msb_decimal_digits);
         }
-    
-        //bigint[0]...bigint[n-2]        
-        int str_idx = num_msb_decimal_digits;        
 
-        while (big_digit_counter >= 0) {
+        //bigint[0]...bigint[n-2]
+        int str_idx = num_msb_decimal_digits;
+
+        while (big_digit_counter >= 0)
+        {
             bigint[big_digit_counter--] = build_bigint(str, str_idx, BASE_EXP);
             str_idx += BASE_EXP;
-        }        
+        }
     }
 
     struct bigint result = {bigint, num_big_digits};
@@ -97,21 +110,30 @@ struct bigint from_string(char* str) {
 /*
     Adds as many zeroes as needed to the right to make size of bigint equal to num_digits 
 */
-size_t* pad_bigint(int original_num_digits, int new_num_digits, size_t *bigint) {
-    assert (original_num_digits < new_num_digits);
-    size_t* new_bigint = (size_t *) realloc(bigint, new_num_digits * sizeof(size_t));
-    if (new_bigint != NULL) {
-        for (int i = original_num_digits; i < new_num_digits; i++) {
+size_t *pad_bigint(int original_num_digits, int new_num_digits, size_t *bigint)
+{
+    assert(original_num_digits < new_num_digits);
+    size_t *new_bigint = (size_t *)realloc(bigint, new_num_digits * sizeof(size_t));
+    if (new_bigint != NULL)
+    {
+        for (int i = original_num_digits; i < new_num_digits; i++)
+        {
             new_bigint[i] = 0;
-        }        
+        }
     }
-    return new_bigint;    
+    return new_bigint;
 }
 
-char* remove_least_significant_zeros(char* str) {
+char *remove_least_significant_zeros(char *str)
+{
     char c;
-    while ((c = *str++) == '0'){}
-    return str-1;   
+    while ((c = *str++) == '0')
+        ;
+
+    if (*(str - 1) == '\0') //result is 0
+        return str - 2;
+
+    return str - 1;
 }
 
 /*
@@ -123,12 +145,15 @@ char* remove_least_significant_zeros(char* str) {
     w = u + v
     w has an extra digit to store the final carry (either 0 or 1)
 */
-size_t* sum(int num_digits, size_t *u, size_t *v, size_t *w) { 
+size_t *sum(int num_digits, size_t *u, size_t *v, size_t *w)
+{
     int carry = 0;
-    for (int i = 0; i < num_digits; i++) {
+    for (int i = 0; i < num_digits; i++)
+    {
         w[i] = u[i] + v[i] + carry;
         carry = 0;
-        if(w[i] >= BASE) { //overflow
+        if (w[i] >= BASE)
+        { //overflow
             w[i] -= BASE;
             carry = 1;
         }
@@ -145,16 +170,20 @@ size_t* sum(int num_digits, size_t *u, size_t *v, size_t *w) {
     decimal places = as many as we want (the only limit is the physical memory of the machine)
     w = u - v, where u >= v
 */
-size_t* subtract(int num_digits, size_t *u, size_t *v, size_t *w) {     
+size_t *subtract(int num_digits, size_t *u, size_t *v, size_t *w)
+{
     int borrow = 0;
-    for (int i = 0; i < num_digits; i++) {
+    for (int i = 0; i < num_digits; i++)
+    {
         size_t subtrahend = v[i] + borrow;
         borrow = 0;
-        if (u[i] < subtrahend) { //overflow
+        if (u[i] < subtrahend)
+        { //overflow
             w[i] = u[i] + BASE - subtrahend;
             borrow = 1;
         }
-        else {
+        else
+        {
             w[i] = u[i] - subtrahend;
         }
     }
@@ -164,106 +193,150 @@ size_t* subtract(int num_digits, size_t *u, size_t *v, size_t *w) {
 /*
     Adds as many zeroes as needed to the right so that both operands have the same length
 */
-int pad_operands(struct bigint bigint_a, struct bigint bigint_b) {
+int pad_operands(struct bigint bigint_a, struct bigint bigint_b)
+{
     struct bigint least_bigint, greatest_bigint;
 
-    if (bigint_a.num_digits == bigint_b.num_digits) {
+    if (bigint_a.num_digits == bigint_b.num_digits)
+    {
         return EXIT_SUCCESS;
     }
 
-    if (bigint_a.num_digits < bigint_b.num_digits) {
+    if (bigint_a.num_digits < bigint_b.num_digits)
+    {
         least_bigint = bigint_a;
-        greatest_bigint= bigint_b;   
+        greatest_bigint = bigint_b;
     }
-    else if (bigint_a.num_digits > bigint_b.num_digits) {
+    else if (bigint_a.num_digits > bigint_b.num_digits)
+    {
         least_bigint = bigint_b;
-        greatest_bigint = bigint_a;  
+        greatest_bigint = bigint_a;
     }
 
-    size_t* padded_bigint = pad_bigint(least_bigint.num_digits, greatest_bigint.num_digits, least_bigint.number);
-    if (padded_bigint != NULL) {
+    size_t *padded_bigint = pad_bigint(least_bigint.num_digits, greatest_bigint.num_digits, least_bigint.number);
+    if (padded_bigint != NULL)
+    {
         least_bigint.number = padded_bigint;
         least_bigint.num_digits = greatest_bigint.num_digits;
-        return EXIT_SUCCESS; 
-        
+        return EXIT_SUCCESS;
     }
     return EXIT_FAILURE;
 }
 
-int largest_operand(struct bigint bigint_a, struct bigint bigint_b) {
-    if (bigint_a.num_digits > bigint_b.num_digits) {
+int calculate_greatest_operand(struct bigint bigint_a, struct bigint bigint_b)
+{
+    if (bigint_a.num_digits > bigint_b.num_digits)
+    {
         return 1;
     }
-    else if (bigint_a.num_digits < bigint_b.num_digits) {
+    else if (bigint_a.num_digits < bigint_b.num_digits)
+    {
         return 2;
     }
 
     int j = bigint_a.num_digits - 1;
-    while (j >= 0 && bigint_a.number[j] == bigint_b.number[j]) {
+    while (j >= 0 && bigint_a.number[j] == bigint_b.number[j])
+    {
         j--;
-    } 
+    }
 
-    if (j == -1) {
+    if (j == -1)
+    {
         return 0;
-    }    
-    else if (bigint_a.number[j] > bigint_b.number[j]) {
+    }
+    else if (bigint_a.number[j] > bigint_b.number[j])
+    {
         return 1;
     }
 
     return 2;
 }
 
-char* bigsum(char* a, char* b) {
-    struct bigint bigint_a = from_string(a);
-    if (bigint_a.number == NULL) return NULL;
-    struct bigint bigint_b = from_string(b);
-    if (bigint_b.number == NULL) return NULL;
+/*
+    bigint_a >= bigint_b ?
+*/
+bool is_gte(struct bigint bigint_a, struct bigint bigint_b)
+{
+    if (bigint_a.num_digits > bigint_b.num_digits)
+        return true;
+    if (bigint_a.num_digits < bigint_b.num_digits)
+        return false;
 
-    if(pad_operands(bigint_a, bigint_b) == EXIT_FAILURE) return NULL;
-    
-    assert (bigint_a.num_digits == bigint_b.num_digits);
-    size_t result_size = bigint_a.num_digits + 1; //extra digit for the final carry
-    size_t result[result_size];
-    
-    sum(bigint_a.num_digits, bigint_a.number, bigint_b.number, result);
-    return remove_least_significant_zeros(to_string((struct bigint) {result, result_size}));
+    int j = bigint_a.num_digits - 1;
+    while (j >= 0 && bigint_a.number[j] == bigint_b.number[j])
+        j--;
+
+    return (j == -1) || (bigint_a.number[j] > bigint_b.number[j]);
 }
 
-char* bigsubtract(char* a, char* b) {
+char *bigsum(char *a, char *b)
+{
     struct bigint bigint_a = from_string(a);
-    struct bigint bigint_b = from_string(b);
-
-    int lgest_operand = largest_operand(bigint_a, bigint_b);
-
-    if(pad_operands(bigint_a, bigint_b) == EXIT_FAILURE) {
+    if (bigint_a.number == NULL)
         return NULL;
-    }
+    struct bigint bigint_b = from_string(b);
+    if (bigint_b.number == NULL)
+        return NULL;
 
-    size_t result_size = bigint_a.num_digits;
+    if (pad_operands(bigint_a, bigint_b) == EXIT_FAILURE)
+        return NULL;
+
+    assert(bigint_a.num_digits == bigint_b.num_digits);
+    size_t result_size = bigint_a.num_digits + 1; //extra digit for the final carry
     size_t result[result_size];
-      
 
-    if (lgest_operand == 0) {
-        return "0";
-    }    
-    else if (lgest_operand == 1) {
-        subtract(bigint_a.num_digits, bigint_a.number, bigint_b.number, result);
-        return remove_least_significant_zeros(to_string((struct bigint) {result, result_size}));
-    }
-    else {        
-        subtract(bigint_a.num_digits, bigint_b.number, bigint_a.number, result);  
-        char* subtract_str = to_string((struct bigint) {result, result_size});  
-        char* result_str = remove_least_significant_zeros(subtract_str);
-        char* signed_result = (char*) malloc((strlen(result_str)+ 2) * sizeof(char));
-        signed_result[0] = '-';
-        signed_result[1] = '\0';        
-        strcat(signed_result, result_str); 
-        free(subtract_str); 
-        return signed_result;   
-    }
-    
+    sum(bigint_a.num_digits, bigint_a.number, bigint_b.number, result);
+    return remove_least_significant_zeros(to_string((struct bigint){result, result_size}));
+}
 
-    
+/*
+    a - b
+*/
+char *bigsubtract(char *a, char *b)
+{
+    struct bigint bigint_a = from_string(a);
+    if (bigint_a.number == NULL)
+        return NULL;
+    struct bigint bigint_b = from_string(b);
+    if (bigint_b.number == NULL)
+        return NULL;
+
+    struct bigint greatest_operand, least_operand;
+    char sign;
+
+    if (is_gte(bigint_a, bigint_b))
+    {
+        greatest_operand = bigint_a;
+        least_operand = bigint_b;
+        sign = '+';
+    }
+    else
+    {
+        greatest_operand = bigint_b;
+        least_operand = bigint_a;
+        sign = '-';
+    }
+
+    if (pad_operands(bigint_a, bigint_b) == EXIT_FAILURE)
+        return NULL;
+
+    assert(greatest_operand.num_digits == least_operand.num_digits);
+    size_t result_size = greatest_operand.num_digits;
+    size_t result[result_size];
+
+    subtract(greatest_operand.num_digits, greatest_operand.number, least_operand.number, result);
+    char *result_str = to_string((struct bigint){result, result_size});
+    char *prettified_result = remove_least_significant_zeros(result_str);
+
+    if (sign == '+')
+        return prettified_result;
+
+    char *signed_result = (char *) malloc((strlen(prettified_result) + 2) * sizeof(char));
+    signed_result[0] = '-';
+    signed_result[1] = '\0';
+    strcat(signed_result, prettified_result);
+    free(result_str);
+    return signed_result;
 }
 
 // int main(int argc, char const *argv[]) {
@@ -278,15 +351,15 @@ char* bigsubtract(char* a, char* b) {
 //     // sum(num_digits, u, v, w);
 //     // for (int i = num_digits; i >= 0; i--) {
 //     //     printf("%lu", w[i]);
-//     // } 
-//     // printf("\nhello %lu\n", a+a);   
-//     // size_t *result = from_string("000000000000000456123456789012345678");    
+//     // }
+//     // printf("\nhello %lu\n", a+a);
+//     // size_t *result = from_string("000000000000000456123456789012345678");
 //     // printf("result=%lu\n", from_string("678")[0]);
 //     // size_t bigint[] = {123456789012345678, 456};
 //     // char* result2 = to_string(result,2);
 //     // printf("%s", result2);
 
-//     char *result = bigsum("12", "12");
+//     char *result = bigsubtract("12", "12");
 //     printf("result=%s\n", result);
 //     return 0;
 //     //0000000000000000456123456789012345678
