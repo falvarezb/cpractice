@@ -95,7 +95,7 @@ struct bigint from_string(char* str) {
 }
 
 /*
-    Adds as many zeros as needed to the right to make size of bigint equal to num_digits 
+    Adds as many zeroes as needed to the right to make size of bigint equal to num_digits 
 */
 size_t* pad_bigint(int original_num_digits, int new_num_digits, size_t *bigint) {
     assert (original_num_digits < new_num_digits);
@@ -111,7 +111,7 @@ size_t* pad_bigint(int original_num_digits, int new_num_digits, size_t *bigint) 
 char* remove_least_significant_zeros(char* str) {
     char c;
     while ((c = *str++) == '0'){}
-    return str-1;    
+    return str-1;   
 }
 
 /*
@@ -121,6 +121,7 @@ char* remove_least_significant_zeros(char* str) {
     digits = [0, 10^BASE_EXP-1], u[0],v[0],w[0] contain the least significant digit
     decimal places = as many as we want (the only limit is the physical memory of the machine)
     w = u + v
+    w has an extra digit to store the final carry (either 0 or 1)
 */
 size_t* sum(int num_digits, size_t *u, size_t *v, size_t *w) { 
     int carry = 0;
@@ -160,57 +161,105 @@ size_t* subtract(int num_digits, size_t *u, size_t *v, size_t *w) {
     return w;
 }
 
-char* bigsum(char* a, char* b) {
-    struct bigint bigint_a = from_string(a);
-    struct bigint bigint_b = from_string(b);
+/*
+    Adds as many zeroes as needed to the right so that both operands have the same length
+*/
+int pad_operands(struct bigint bigint_a, struct bigint bigint_b) {
+    struct bigint least_bigint, greatest_bigint;
+
+    if (bigint_a.num_digits == bigint_b.num_digits) {
+        return EXIT_SUCCESS;
+    }
 
     if (bigint_a.num_digits < bigint_b.num_digits) {
-        bigint_a.number = pad_bigint(bigint_a.num_digits, bigint_b.num_digits, bigint_a.number);
-        bigint_a.num_digits = bigint_b.num_digits;
+        least_bigint = bigint_a;
+        greatest_bigint= bigint_b;   
     }
     else if (bigint_a.num_digits > bigint_b.num_digits) {
-        bigint_b.number = pad_bigint(bigint_b.num_digits, bigint_a.num_digits, bigint_b.number);
-        bigint_b.num_digits = bigint_a.num_digits;
+        least_bigint = bigint_b;
+        greatest_bigint = bigint_a;  
     }
+
+    size_t* padded_bigint = pad_bigint(least_bigint.num_digits, greatest_bigint.num_digits, least_bigint.number);
+    if (padded_bigint != NULL) {
+        least_bigint.number = padded_bigint;
+        least_bigint.num_digits = greatest_bigint.num_digits;
+        return EXIT_SUCCESS; 
+        
+    }
+    return EXIT_FAILURE;
+}
+
+int largest_operand(struct bigint bigint_a, struct bigint bigint_b) {
+    if (bigint_a.num_digits > bigint_b.num_digits) {
+        return 1;
+    }
+    else if (bigint_a.num_digits < bigint_b.num_digits) {
+        return 2;
+    }
+
+    int j = bigint_a.num_digits - 1;
+    while (j >= 0 && bigint_a.number[j] == bigint_b.number[j]) {
+        j--;
+    } 
+
+    if (j == -1) {
+        return 0;
+    }    
+    else if (bigint_a.number[j] > bigint_b.number[j]) {
+        return 1;
+    }
+
+    return 2;
+}
+
+char* bigsum(char* a, char* b) {
+    struct bigint bigint_a = from_string(a);
+    if (bigint_a.number == NULL) return NULL;
+    struct bigint bigint_b = from_string(b);
+    if (bigint_b.number == NULL) return NULL;
+
+    if(pad_operands(bigint_a, bigint_b) == EXIT_FAILURE) return NULL;
     
-    size_t result[bigint_a.num_digits + 1];
+    assert (bigint_a.num_digits == bigint_b.num_digits);
+    size_t result_size = bigint_a.num_digits + 1; //extra digit for the final carry
+    size_t result[result_size];
+    
     sum(bigint_a.num_digits, bigint_a.number, bigint_b.number, result);
-    return remove_least_significant_zeros(to_string((struct bigint) {result, bigint_a.num_digits+1}));
+    return remove_least_significant_zeros(to_string((struct bigint) {result, result_size}));
 }
 
 char* bigsubtract(char* a, char* b) {
     struct bigint bigint_a = from_string(a);
     struct bigint bigint_b = from_string(b);
 
-    if (bigint_a.num_digits < bigint_b.num_digits) {
-        bigint_a.number = pad_bigint(bigint_a.num_digits, bigint_b.num_digits, bigint_a.number);
-        bigint_a.num_digits = bigint_b.num_digits;
-    }
-    else if (bigint_a.num_digits > bigint_b.num_digits) {
-        bigint_b.number = pad_bigint(bigint_b.num_digits, bigint_a.num_digits, bigint_b.number);
-        bigint_b.num_digits = bigint_a.num_digits;
+    int lgest_operand = largest_operand(bigint_a, bigint_b);
+
+    if(pad_operands(bigint_a, bigint_b) == EXIT_FAILURE) {
+        return NULL;
     }
 
-    size_t result[bigint_a.num_digits];
-    int j = bigint_a.num_digits-1;
-    while (j >= 0 && bigint_a.number[j] == bigint_b.number[j]) {
-        j--;
-    }    
+    size_t result_size = bigint_a.num_digits;
+    size_t result[result_size];
+      
 
-    if (j == -1) {
+    if (lgest_operand == 0) {
         return "0";
     }    
-    else if (bigint_a.number[j] > bigint_b.number[j]) {
+    else if (lgest_operand == 1) {
         subtract(bigint_a.num_digits, bigint_a.number, bigint_b.number, result);
-        return remove_least_significant_zeros(to_string((struct bigint) {result, bigint_a.num_digits}));
+        return remove_least_significant_zeros(to_string((struct bigint) {result, result_size}));
     }
     else {        
-        subtract(bigint_a.num_digits, bigint_b.number, bigint_a.number, result);        
-        char* result_str = remove_least_significant_zeros(to_string((struct bigint) {result, bigint_a.num_digits}));
+        subtract(bigint_a.num_digits, bigint_b.number, bigint_a.number, result);  
+        char* subtract_str = to_string((struct bigint) {result, result_size});  
+        char* result_str = remove_least_significant_zeros(subtract_str);
         char* signed_result = (char*) malloc((strlen(result_str)+ 2) * sizeof(char));
         signed_result[0] = '-';
-        signed_result[1] = '\0';
-        return strcat(signed_result, result_str);
+        signed_result[1] = '\0';        
+        strcat(signed_result, result_str); 
+        free(subtract_str); 
+        return signed_result;   
     }
     
 
@@ -237,7 +286,7 @@ char* bigsubtract(char* a, char* b) {
 //     // char* result2 = to_string(result,2);
 //     // printf("%s", result2);
 
-//     char *result = bigsubtract("12", "12");
+//     char *result = bigsum("12", "12");
 //     printf("result=%s\n", result);
 //     return 0;
 //     //0000000000000000456123456789012345678
