@@ -193,31 +193,30 @@ size_t *subtract(int num_digits, size_t *u, size_t *v, size_t *w)
 /*
     Adds as many zeroes as needed to the right so that both operands have the same length
 */
-int pad_operands(struct bigint bigint_a, struct bigint bigint_b)
+int pad_operands(struct bigint *bigint_a, struct bigint *bigint_b)
 {
-    struct bigint least_bigint, greatest_bigint;
+    struct bigint *least_bigint, *greatest_bigint;
 
-    if (bigint_a.num_digits == bigint_b.num_digits)
+    if (bigint_a->num_digits == bigint_b->num_digits)
     {
         return EXIT_SUCCESS;
     }
-
-    if (bigint_a.num_digits < bigint_b.num_digits)
+    else if (bigint_a->num_digits < bigint_b->num_digits)
     {
         least_bigint = bigint_a;
         greatest_bigint = bigint_b;
     }
-    else if (bigint_a.num_digits > bigint_b.num_digits)
+    else
     {
         least_bigint = bigint_b;
         greatest_bigint = bigint_a;
     }
 
-    size_t *padded_bigint = pad_bigint(least_bigint.num_digits, greatest_bigint.num_digits, least_bigint.number);
+    size_t *padded_bigint = pad_bigint(least_bigint->num_digits, greatest_bigint->num_digits, least_bigint->number);
     if (padded_bigint != NULL)
     {
-        least_bigint.number = padded_bigint;
-        least_bigint.num_digits = greatest_bigint.num_digits;
+        least_bigint->number = padded_bigint;
+        least_bigint->num_digits = greatest_bigint->num_digits;
         return EXIT_SUCCESS;
     }
     return EXIT_FAILURE;
@@ -250,7 +249,7 @@ char *bigsum(char *a, char *b)
     if (bigint_b.number == NULL)
         return NULL;
 
-    if (pad_operands(bigint_a, bigint_b) == EXIT_FAILURE)
+    if (pad_operands(&bigint_a, &bigint_b) == EXIT_FAILURE)
         return NULL;
 
     assert(bigint_a.num_digits == bigint_b.num_digits);
@@ -289,7 +288,7 @@ char *bigsubtract(char *a, char *b)
         sign = '-';
     }
 
-    if (pad_operands(bigint_a, bigint_b) == EXIT_FAILURE)
+    if (pad_operands(&greatest_operand, &least_operand) == EXIT_FAILURE)
         return NULL;
 
     assert(greatest_operand.num_digits == least_operand.num_digits);

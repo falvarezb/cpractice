@@ -22,7 +22,7 @@ int main(int argc, char const *argv[]) {
     // char* result2 = to_string(result,2);
     // printf("%s", result2);
 
-    char *result = bigsubtract("12", "13");
+    char *result = bigsubtract("1", "1843947378473748483873478");
     printf("result=%s\n", result);
     return 0;
     //0000000000000000456123456789012345678
