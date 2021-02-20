@@ -53,6 +53,8 @@ dkms.conf
 
 *.code-workspace
 
+out/
+
 mathlibrarytest
 strlibrarytest
 strlibrary

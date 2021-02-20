@@ -2,6 +2,7 @@ GCC = gcc
 CFLAGS = -g -Wall -Wshadow
 VALGRIND = valgrind --tool=memcheck --leak-check=full 
 VALGRIND += --verbose --log-file=
+BUILD_DIR = out
 
 
 run: strlibrary
@@ -10,33 +11,29 @@ run: strlibrary
 # strlibrary: strlibrary.o
 # 	$(GCC) $(CFLAGS) strlibrary.o -o $@ -lm
 
-# mathlibrary: strlibrary.o
-# 	$(GCC) $(CFLAGS) mathlibrary.o -o $@ -lm
-
 strtest: strlibrarytest
-	./strlibrarytest
+	./${BUILD_DIR}/strlibrarytest
 
 mathtest: mathlibrarytest
-	./mathlibrarytest
+	./${BUILD_DIR}/mathlibrarytest
 
 biginttest: bigint_test
-	./bigint_test
+	./${BUILD_DIR}/bigint_test
 	
 
-# $@ means the symbol before the :
 strlibrarytest: strlibrary.o strlibrarytest.o
 	$(GCC) $(CFLAGS) strlibrary.o strlibrarytest.o -o $@ -lm
 
 mathlibrarytest: mathlibrary1.o mathlibrarytest.o
 	$(GCC) $(CFLAGS) mathlibrary1.o mathlibrarytest.o -o $@ -lm
 
-bigint_test: bigint.o biginttest.o
-	$(GCC) $(CFLAGS) bigint.o biginttest.o -o $@ -lm
+bigint_test: ${BUILD_DIR}/bigint.o ${BUILD_DIR}/biginttest.o
+	$(GCC) $(CFLAGS) ${BUILD_DIR}/bigint.o ${BUILD_DIR}/biginttest.o -o ${BUILD_DIR}/$@ -lm
 
 
 # if an object ﬁle is needed, compile the corresponding .c ﬁle
-.c.o:
-	$(GCC) $(CFLAGS) -c $*.c	
+${BUILD_DIR}/%.o: %.c
+	$(GCC) $(CFLAGS) -c $< -o $@
 
 clean:
-	rm -f outputs/* logs/* *.o binaries/*
+	rm -f outputs/* logs/* *.o ${BUILD_DIR}/*
