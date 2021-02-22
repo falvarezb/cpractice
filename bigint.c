@@ -6,15 +6,15 @@
 #include <assert.h>
 #include <stdbool.h>
 
-const int BASE_EXP = 18;                        //small enough to ensure that the individual digits of bigint fit in size_t
-const unsigned long BASE = 1000000000000000000; //10^BASE_EXP
+const int BASE_EXP = 18;                        //small enough to ensure that the individual digits of bigint fit in uint64_t
+const uint64_t BASE = 1000000000000000000; //10^BASE_EXP
 
 /*
     Copies the digits of big_digit into the corresponding positions of 'result'
     Copy is done backwards (right to left) so that leftmost digits are the most significant ones
     If number of digits is less than BASE_POWER, the result is padded with 0s to the left
 */
-void build_bigint_str(char *result, int from, size_t big_digit)
+void build_bigint_str(char *result, int from, uint64_t big_digit)
 {
     for (int i = BASE_EXP - 1; i >= 0; i--)
     {
@@ -40,7 +40,7 @@ char *to_string(struct bigint bigint)
     {
         for (int j = 0; j < bigint.num_digits; j++)
         {
-            size_t big_digit = bigint.number[bigint.num_digits - 1 - j];
+            uint64_t big_digit = bigint.number[bigint.num_digits - 1 - j];
             build_bigint_str(str, BASE_EXP * j, big_digit);
         }
         str[bigint.num_digits * BASE_EXP] = '\0';
@@ -51,9 +51,9 @@ char *to_string(struct bigint bigint)
 /*
     Converts the specified chars of 'str' into an integer 
 */
-size_t build_bigint(char *str, int from, int n_digits)
+uint64_t build_bigint(char *str, int from, int n_digits)
 {
-    size_t big_digit = 0;
+    uint64_t big_digit = 0;
     char c[2] = {'0', '\0'};
     int decimal_digit;
 
@@ -81,7 +81,7 @@ struct bigint from_string(char *str)
         num_big_digits++;
     }
 
-    size_t *bigint = (size_t *)malloc(num_big_digits * sizeof(size_t));
+    uint64_t *bigint = (uint64_t *)malloc(num_big_digits * sizeof(uint64_t));
     if (bigint != NULL)
     {
         int big_digit_counter = num_big_digits - 1;
@@ -110,10 +110,10 @@ struct bigint from_string(char *str)
 /*
     Adds as many zeroes as needed to the right to make size of bigint equal to num_digits 
 */
-size_t *pad_bigint(int original_num_digits, int new_num_digits, size_t *bigint)
+uint64_t *pad_bigint(int original_num_digits, int new_num_digits, uint64_t *bigint)
 {
     assert(original_num_digits < new_num_digits);
-    size_t *new_bigint = (size_t *)realloc(bigint, new_num_digits * sizeof(size_t));
+    uint64_t *new_bigint = (uint64_t *)realloc(bigint, new_num_digits * sizeof(uint64_t));
     if (new_bigint != NULL)
     {
         for (int i = original_num_digits; i < new_num_digits; i++)
@@ -145,7 +145,7 @@ char *remove_least_significant_zeros(char *str)
     w = u + v
     w has an extra digit to store the final carry (either 0 or 1)
 */
-size_t *sum(int num_digits, size_t *u, size_t *v, size_t *w)
+uint64_t *sum(int num_digits, uint64_t *u, uint64_t *v, uint64_t *w)
 {
     int carry = 0;
     for (int i = 0; i < num_digits; i++)
@@ -170,12 +170,12 @@ size_t *sum(int num_digits, size_t *u, size_t *v, size_t *w)
     decimal places = as many as we want (the only limit is the physical memory of the machine)
     w = u - v, where u >= v
 */
-size_t *subtract(int num_digits, size_t *u, size_t *v, size_t *w)
+uint64_t *subtract(int num_digits, uint64_t *u, uint64_t *v, uint64_t *w)
 {
     int borrow = 0;
     for (int i = 0; i < num_digits; i++)
     {
-        size_t subtrahend = v[i] + borrow;
+        uint64_t subtrahend = v[i] + borrow;
         borrow = 0;
         if (u[i] < subtrahend)
         { //overflow
@@ -212,7 +212,7 @@ int pad_operands(struct bigint *bigint_a, struct bigint *bigint_b)
         greatest_bigint = bigint_a;
     }
 
-    size_t *padded_bigint = pad_bigint(least_bigint->num_digits, greatest_bigint->num_digits, least_bigint->number);
+    uint64_t *padded_bigint = pad_bigint(least_bigint->num_digits, greatest_bigint->num_digits, least_bigint->number);
     if (padded_bigint != NULL)
     {
         least_bigint->number = padded_bigint;
@@ -254,7 +254,7 @@ char *bigsum(char *a, char *b)
 
     assert(bigint_a.num_digits == bigint_b.num_digits);
     size_t result_size = bigint_a.num_digits + 1; //extra digit for the final carry
-    size_t result[result_size];
+    uint64_t result[result_size];
 
     sum(bigint_a.num_digits, bigint_a.number, bigint_b.number, result);
     return remove_least_significant_zeros(to_string((struct bigint){result, result_size}));
@@ -293,7 +293,7 @@ char *bigsubtract(char *a, char *b)
 
     assert(greatest_operand.num_digits == least_operand.num_digits);
     size_t result_size = greatest_operand.num_digits;
-    size_t result[result_size];
+    uint64_t result[result_size];
 
     subtract(greatest_operand.num_digits, greatest_operand.number, least_operand.number, result);
     char *result_str = to_string((struct bigint){result, result_size});
