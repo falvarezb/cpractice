@@ -6,7 +6,7 @@
 #include <assert.h>
 #include <stdbool.h>
 
-const int BASE_EXP = 18;                        //small enough to ensure that the individual digits of bigint fit in uint64_t
+const int BASE_EXP = 18;                   //small enough to ensure that the individual digits of bigint fit in uint64_t
 const uint64_t BASE = 1000000000000000000; //10^BASE_EXP
 
 /*
@@ -222,7 +222,6 @@ int pad_operands(struct bigint *bigint_a, struct bigint *bigint_b)
     return EXIT_FAILURE;
 }
 
-
 /*
     bigint_a >= bigint_b ?
 */
@@ -302,7 +301,7 @@ char *bigsubtract(char *a, char *b)
     if (sign == '+')
         return prettified_result;
 
-    char *signed_result = (char *) malloc((strlen(prettified_result) + 2) * sizeof(char));
+    char *signed_result = (char *)malloc((strlen(prettified_result) + 2) * sizeof(char));
     signed_result[0] = '-';
     signed_result[1] = '\0';
     strcat(signed_result, prettified_result);
