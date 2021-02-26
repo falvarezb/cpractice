@@ -6,7 +6,9 @@
             "command": "/usr/bin/gcc",
             "args": [
                 "-g",
-                "bigint.c",
+                "bigint_parser.c",
+                "bigint_arithmetic.c",
+                "bigint_calculator.c",
                 "${file}",
                 "-o",
                 "${fileDirname}/out/${fileBasenameNoExtension}"

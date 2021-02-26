@@ -19,6 +19,15 @@ mathtest: mathlibrarytest
 
 biginttest: bigint_test
 	./${BUILD_DIR}/bigint_test
+
+bigintcalculator: bigint_calculator
+	./${BUILD_DIR}/bigint_calculator
+
+bigintparser: bigint_parser
+	./${BUILD_DIR}/bigint_parser
+
+bigintarithmetic: bigint_arithmetic
+	./${BUILD_DIR}/bigint_arithmetic
 	
 
 strlibrarytest: strlibrary.o strlibrarytest.o
@@ -27,8 +36,14 @@ strlibrarytest: strlibrary.o strlibrarytest.o
 mathlibrarytest: mathlibrary1.o mathlibrarytest.o
 	$(GCC) $(CFLAGS) mathlibrary1.o mathlibrarytest.o -o $@ -lm
 
-bigint_test: ${BUILD_DIR}/bigint.o ${BUILD_DIR}/biginttest.o
-	$(GCC) $(CFLAGS) ${BUILD_DIR}/bigint.o ${BUILD_DIR}/biginttest.o -o ${BUILD_DIR}/$@ -lm
+bigint_calculator: ${BUILD_DIR}/bigint_calculator.o ${BUILD_DIR}/bigint_parser.o ${BUILD_DIR}/bigint_arithmetic.o ${BUILD_DIR}/bigint_calculator_test.o
+	$(GCC) $(CFLAGS) ${BUILD_DIR}/bigint_calculator.o ${BUILD_DIR}/bigint_parser.o ${BUILD_DIR}/bigint_arithmetic.o  ${BUILD_DIR}/bigint_calculator_test.o -o ${BUILD_DIR}/$@ -lm
+
+bigint_parser: ${BUILD_DIR}/bigint_parser.o ${BUILD_DIR}/bigint_parser_test.o
+	$(GCC) $(CFLAGS) ${BUILD_DIR}/bigint_parser.o ${BUILD_DIR}/bigint_parser_test.o -o ${BUILD_DIR}/$@ -lm
+
+bigint_arithmetic: ${BUILD_DIR}/bigint_arithmetic.o ${BUILD_DIR}/bigint_arithmetic_test.o
+	$(GCC) $(CFLAGS) ${BUILD_DIR}/bigint_arithmetic.o ${BUILD_DIR}/bigint_arithmetic_test.o -o ${BUILD_DIR}/$@ -lm
 
 
 # if an object ﬁle is needed, compile the corresponding .c ﬁle
