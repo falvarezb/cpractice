@@ -3,6 +3,7 @@ CFLAGS = -g -Wall -Wshadow
 VALGRIND = valgrind --tool=memcheck --leak-check=full 
 VALGRIND += --verbose --log-file=
 BUILD_DIR = out
+BIGINT_OBJS = ${BUILD_DIR}/bigint_calculator.o ${BUILD_DIR}/bigint_parser.o ${BUILD_DIR}/bigint_arithmetic.o ${BUILD_DIR}/bigint_calculator_test.o
 
 
 run: strlibrary
@@ -36,8 +37,8 @@ strlibrarytest: strlibrary.o strlibrarytest.o
 mathlibrarytest: mathlibrary1.o mathlibrarytest.o
 	$(GCC) $(CFLAGS) mathlibrary1.o mathlibrarytest.o -o $@ -lm
 
-bigint_calculator: ${BUILD_DIR}/bigint_calculator.o ${BUILD_DIR}/bigint_parser.o ${BUILD_DIR}/bigint_arithmetic.o ${BUILD_DIR}/bigint_calculator_test.o
-	$(GCC) $(CFLAGS) ${BUILD_DIR}/bigint_calculator.o ${BUILD_DIR}/bigint_parser.o ${BUILD_DIR}/bigint_arithmetic.o  ${BUILD_DIR}/bigint_calculator_test.o -o ${BUILD_DIR}/$@ -lm
+bigint_calculator: $(BIGINT_OBJS)
+	$(GCC) $(CFLAGS) $(BIGINT_OBJS) -o ${BUILD_DIR}/$@ -lm
 
 bigint_parser: ${BUILD_DIR}/bigint_parser.o ${BUILD_DIR}/bigint_parser_test.o
 	$(GCC) $(CFLAGS) ${BUILD_DIR}/bigint_parser.o ${BUILD_DIR}/bigint_parser_test.o -o ${BUILD_DIR}/$@ -lm
