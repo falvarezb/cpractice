@@ -1,5 +1,5 @@
 #include "acutest.h"
-#include "bigint_parser.h"
+#include "bigint.h"
 #include <stddef.h>
 #include <math.h>
 #include <string.h>

@@ -1,5 +1,5 @@
 #include "acutest.h"
-#include "bigint_calculator.h"
+#include "bigint.h"
 #include <stddef.h>
 #include <math.h>
 #include <string.h>

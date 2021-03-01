@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "bigint_calculator.h"
+#include "bigint.h"
 
 
 int main(int argc, char const *argv[]) {

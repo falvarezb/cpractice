@@ -2,8 +2,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
-#include "bigint_parser.h"
-#include "bigint_arithmetic.h"
+#include "bigint.h"
 #include <assert.h>
 #include <stdbool.h>
 

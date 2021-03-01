@@ -2,20 +2,25 @@
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
-#include "bigint_arithmetic.h"
-#include "bigint_params.h"
+#include "bigint.h"
 #include <assert.h>
 #include <stdbool.h>
+
+/*
+    Basic operations to perform arbitrary-precision arithmetic 
+
+    * base = 10^BASE_EXP
+    * in this base, individual digits are values in the range [0, 10^BASE_EXP-1]
+    * numbers are represented as arrays of digits using little-endian representation, 
+      in other words, u[0] contains the least significant digit
+    * the only limitation to the number of digits is the physical memory of the machine
+*/
 
 
 /*
     classical algorithm of the sum
-
-    base = 10^BASE_EXP
-    digits = [0, 10^BASE_EXP-1], u[0],v[0],w[0] contain the least significant digit
-    decimal places = as many as we want (the only limit is the physical memory of the machine)
-    w = u + v
-    w has an extra digit to store the final carry (either 0 or 1)
+    * w = u + v
+    * w has one more digit than u and v to store the final carry (either 0 or 1)
 */
 uint64_t *sum(int num_digits, uint64_t *u, uint64_t *v, uint64_t *w)
 {
@@ -35,12 +40,8 @@ uint64_t *sum(int num_digits, uint64_t *u, uint64_t *v, uint64_t *w)
 }
 
 /*
-    classical algorithm of the subtraction
-
-    base = 10^BASE_EXP
-    digits = [0, 10^BASE_EXP-1], u[0],v[0],w[0] contain the least significant digit
-    decimal places = as many as we want (the only limit is the physical memory of the machine)
-    w = u - v, where u >= v
+    classical algorithm of the subtraction)
+    * w = u - v, where u >= v
 */
 uint64_t *subtract(int num_digits, uint64_t *u, uint64_t *v, uint64_t *w)
 {

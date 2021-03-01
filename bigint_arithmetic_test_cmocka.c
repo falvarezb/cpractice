@@ -1,4 +1,4 @@
-#include "bigint_arithmetic.h"
+#include "bigint.h"
 #include <stddef.h>
 #include <stdarg.h>
 #include <setjmp.h>
