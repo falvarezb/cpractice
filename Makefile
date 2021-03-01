@@ -43,8 +43,8 @@ bigint_calculator: $(BIGINT_OBJS)
 bigint_parser: ${BUILD_DIR}/bigint_parser.o ${BUILD_DIR}/bigint_parser_test.o
 	$(GCC) $(CFLAGS) ${BUILD_DIR}/bigint_parser.o ${BUILD_DIR}/bigint_parser_test.o -o ${BUILD_DIR}/$@ -lm
 
-bigint_arithmetic: ${BUILD_DIR}/bigint_arithmetic.o ${BUILD_DIR}/bigint_arithmetic_test.o
-	$(GCC) $(CFLAGS) ${BUILD_DIR}/bigint_arithmetic.o ${BUILD_DIR}/bigint_arithmetic_test.o -o ${BUILD_DIR}/$@ -lm
+bigint_arithmetic: ${BUILD_DIR}/bigint_arithmetic.o ${BUILD_DIR}/bigint_arithmetic_test_cmocka.o
+	$(GCC) $(CFLAGS) ${BUILD_DIR}/bigint_arithmetic.o ${BUILD_DIR}/bigint_arithmetic_test_cmocka.o -o ${BUILD_DIR}/$@ -lm -lcmocka
 
 
 # if an object ﬁle is needed, compile the corresponding .c ﬁle
