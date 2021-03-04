@@ -1,5 +1,5 @@
 GCC = gcc
-CFLAGS = -g -Wall -Wshadow
+CFLAGS = -g -Wall -Wextra -Wshadow -Wpedantic -std=c11
 VALGRIND = valgrind --tool=memcheck --leak-check=full 
 VALGRIND += --verbose --log-file=
 BUILD_DIR = out

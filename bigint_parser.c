@@ -6,30 +6,46 @@
 #include <assert.h>
 #include <stdbool.h>
 
-
 /*
-    Copies the digits of big_digit into the corresponding positions of 'result'
+    Copy the digits of 'big_digit' into the block of memory 'result' starting at 'offset'
     Copy is done backwards (right to left) so that leftmost digits are the most significant ones
     If number of digits is less than BASE_POWER, the result is padded with 0s to the left
+
+    Given 123, and buffer "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+                                     
+                           ⟍|⟋ 
+    #1: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    #2: "xxxxxxxxxxxxxxxxxxx3xxxxxxxxxxxxxxxx"
+    #3: "xxxxxxxxxxxxxxxxxx23xxxxxxxxxxxxxxxx"
+    #4: "xxxxxxxxxxxxxxxxx123xxxxxxxxxxxxxxxx"
+    #4: "xxxxxxxxxxxxxxxx0123xxxxxxxxxxxxxxxx"
+    .........
+    #BASE_EXP: "x000000000000000123xxxxxxxxxxxxxxxx"
 */
-void build_bigint_str(char *result, int from, uint64_t big_digit)
+void build_bigint_str(char *result, int offset, uint64_t big_digit)
 {
     for (int i = BASE_EXP - 1; i >= 0; i--)
     {
-        int idx = from + i;
+        int idx = offset + i;
         result[idx] = '0' + (big_digit % 10);
         big_digit /= 10;
     }
 }
 
 /*
+
+
+    Build a string by copying the content of each big digit into the block of memory 'str'
+    As bigint stores the data in little-endian, the copy is made backwards
+
     bigint[0] is the least significat digit
     bigint[i] i=0...n-2 have exactly BASE_EXP decimal digits
     bigint[n-1] has up to BASE_EXP decimal digits
 
-    Note: inside bigint[i] (for all i), leftmost digits are the most significant ones
+    Given [123456789012345678,456],
 
-    [123456789012345678,456] --> "000000000000000456123456789012345678"
+    #1: "000000000000000456xxxxxxxxxxxxxxxxxx"
+    #2: "000000000000000456123456789012345678"
 */
 char *to_string(struct bigint bigint)
 {
@@ -47,15 +63,15 @@ char *to_string(struct bigint bigint)
 }
 
 /*
-    Converts the specified chars of 'str' into an integer 
+    Convert the chars in the region [offset, offset + n_digits) into an integer
 */
-uint64_t build_bigint(char *str, int from, int n_digits)
+uint64_t build_bigint(char *str, int offset, int n_digits)
 {
     uint64_t big_digit = 0;
     char c[2] = {'0', '\0'};
     int decimal_digit;
 
-    for (int i = from; i < (from + n_digits); i++)
+    for (int i = offset; i < (offset + n_digits); i++)
     {
         c[0] = str[i];
         decimal_digit = atoi(c);
@@ -68,6 +84,9 @@ uint64_t build_bigint(char *str, int from, int n_digits)
     bigint[0] is the least significat digit
     bigint[i] i=0...n-2 have exactly BASE_EXP decimal digits
     bigint[n-1] has up to BASE_EXP decimal digits
+
+    The chars of 'str' are processed in blocks of BASE_EXP units, each block
+    is converted into an integer stored in an element of an array
 
     "456123456789012345678" --> [123456789012345678,456]
 */
@@ -122,19 +141,6 @@ uint64_t *pad_bigint(int original_num_digits, int new_num_digits, uint64_t *bigi
     return new_bigint;
 }
 
-char *remove_least_significant_zeros(char *str)
-{
-    char c;
-    while ((c = *str++) == '0')
-        ;
-
-    if (*(str - 1) == '\0') //result is 0
-        return str - 2;
-
-    return str - 1;
-}
-
-
 /*
     Adds as many zeroes as needed to the right so that both operands have the same length
 */
@@ -167,5 +173,14 @@ int pad_operands(struct bigint *bigint_a, struct bigint *bigint_b)
     return EXIT_FAILURE;
 }
 
+char *remove_least_significant_zeros(char *str)
+{
+    char c;
+    while ((c = *str++) == '0')
+        ;
 
+    if (*(str - 1) == '\0') //result is 0
+        return str - 2;
 
+    return str - 1;
+}
