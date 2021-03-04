@@ -47,7 +47,7 @@ void build_bigint_str(char *result, int offset, uint64_t big_digit)
     #1: "000000000000000456xxxxxxxxxxxxxxxxxx"
     #2: "000000000000000456123456789012345678"
 */
-char *to_string(struct bigint bigint)
+char *to_string(bigint_t bigint)
 {
     char *str = (char *)malloc((bigint.num_digits * BASE_EXP + 1) * sizeof(char));
     if (str != NULL)
@@ -90,7 +90,7 @@ uint64_t build_bigint(char *str, int offset, int n_digits)
 
     "456123456789012345678" --> [123456789012345678,456]
 */
-struct bigint from_string(char *str)
+bigint_t from_string(char *str)
 {
     int num_big_digits = strlen(str) / BASE_EXP;
     if (strlen(str) % BASE_EXP)
@@ -120,7 +120,7 @@ struct bigint from_string(char *str)
         }
     }
 
-    struct bigint result = {bigint, num_big_digits};
+    bigint_t result = {bigint, num_big_digits};
     return result;
 }
 
@@ -144,9 +144,9 @@ uint64_t *pad_bigint(int original_num_digits, int new_num_digits, uint64_t *bigi
 /*
     Adds as many zeroes as needed to the right so that both operands have the same length
 */
-int pad_operands(struct bigint *bigint_a, struct bigint *bigint_b)
+int pad_operands(bigint_t *bigint_a, bigint_t *bigint_b)
 {
-    struct bigint *least_bigint, *greatest_bigint;
+    bigint_t *least_bigint, *greatest_bigint;
 
     if (bigint_a->num_digits == bigint_b->num_digits)
     {

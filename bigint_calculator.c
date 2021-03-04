@@ -10,7 +10,7 @@
 /*
     bigint_a >= bigint_b ?
 */
-bool is_gte(struct bigint bigint_a, struct bigint bigint_b)
+bool is_gte(bigint_t bigint_a, bigint_t bigint_b)
 {
     if (bigint_a.num_digits > bigint_b.num_digits)
         return true;
@@ -26,10 +26,10 @@ bool is_gte(struct bigint bigint_a, struct bigint bigint_b)
 
 char *bigsum(char *a, char *b)
 {
-    struct bigint bigint_a = from_string(a);
+    bigint_t bigint_a = from_string(a);
     if (bigint_a.number == NULL)
         return NULL;
-    struct bigint bigint_b = from_string(b);
+    bigint_t bigint_b = from_string(b);
     if (bigint_b.number == NULL)
         return NULL;
 
@@ -41,7 +41,7 @@ char *bigsum(char *a, char *b)
     uint64_t result[result_size];
 
     sum(bigint_a.num_digits, bigint_a.number, bigint_b.number, result);
-    return remove_least_significant_zeros(to_string((struct bigint){result, result_size}));
+    return remove_least_significant_zeros(to_string((bigint_t){result, result_size}));
 }
 
 /*
@@ -49,14 +49,14 @@ char *bigsum(char *a, char *b)
 */
 char *bigsubtract(char *a, char *b)
 {
-    struct bigint bigint_a = from_string(a);
+    bigint_t bigint_a = from_string(a);
     if (bigint_a.number == NULL)
         return NULL;
-    struct bigint bigint_b = from_string(b);
+    bigint_t bigint_b = from_string(b);
     if (bigint_b.number == NULL)
         return NULL;
 
-    struct bigint greatest_operand, least_operand;
+    bigint_t greatest_operand, least_operand;
     char sign;
 
     if (is_gte(bigint_a, bigint_b))
@@ -80,7 +80,7 @@ char *bigsubtract(char *a, char *b)
     uint64_t result[result_size];
 
     subtract(greatest_operand.num_digits, greatest_operand.number, least_operand.number, result);
-    char *result_str = to_string((struct bigint){result, result_size});
+    char *result_str = to_string((bigint_t){result, result_size});
     char *prettified_result = remove_least_significant_zeros(result_str);
 
     if (sign == '+')
