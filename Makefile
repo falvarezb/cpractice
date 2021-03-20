@@ -3,6 +3,11 @@ CFLAGS = -g -Wall -Wextra -Wshadow -std=c11 -Wpedantic
 VALGRIND = valgrind --tool=memcheck --leak-check=full 
 VALGRIND += --verbose --log-file=
 BUILD_DIR = out
+# BIGINT_SRCS = bigint_calculator.c \
+# 				bigint_parser.c \
+# 				bigint_arithmetic.c \
+# 				bigint_calculator_test.c
+# BIGINT_OBJS:=$(BIGINT_SRCS:.c=.o)
 BIGINT_OBJS = ${BUILD_DIR}/bigint_calculator.o ${BUILD_DIR}/bigint_parser.o ${BUILD_DIR}/bigint_arithmetic.o ${BUILD_DIR}/bigint_calculator_test.o
 
 
