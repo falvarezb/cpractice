@@ -1,16 +1,17 @@
 #include <pthread.h>
 #include <stdio.h>
-#define SIZE 100000
+#include <semaphore.h>
+#define SIZE 1000
 
-pthread_mutex_t mtx;
+sem_t *semaphore;
 
 void* thread_body1(void* arg) {
     int* x = (int *) arg;
     for (size_t i = 0; i < SIZE; i++)
     {
-        pthread_mutex_lock(&mtx);
+        sem_wait(semaphore);
         *x += 1; 
-        pthread_mutex_unlock(&mtx);
+        sem_post(semaphore);
     }
     return NULL;
 }
@@ -19,9 +20,9 @@ void* thread_body2(void* arg) {
     int* x = (int *) arg;
     for (size_t i = 0; i < SIZE; i++)
     {
-        pthread_mutex_lock(&mtx);
+        sem_wait(semaphore);
         *x += 2; 
-        pthread_mutex_unlock(&mtx);
+        sem_post(semaphore);        
     }
     return NULL;
 }
@@ -33,7 +34,19 @@ int main(int argc, char const *argv[])
     int shared_x = 0;
     pthread_t thread1, thread2;
 
-    pthread_mutex_init(&mtx, NULL);
+#ifdef __APPLE__
+    semaphore = sem_open("sem0", O_CREAT, 0644, 1);
+    if (semaphore == SEM_FAILED)
+    {
+        perror("error creating semaphore\n");
+        return 1;
+    }
+    
+#else
+    sem_t local_semaphore;
+    semaphore = &local_semaphore;
+    sem_init(semaphore, 0, 1);
+#endif
 
     int result1 = pthread_create(&thread1, NULL, thread_body1, &shared_x);
     int result2 = pthread_create(&thread2, NULL, thread_body2, &shared_x);
@@ -49,10 +62,17 @@ int main(int argc, char const *argv[])
     if (result1 | result2)
     {
         printf("threads failed to be joined\n");
-        return 2;
+        return 1;
     }
 
-    printf("thread1: %d\n", shared_x);
+    printf("result: %d\n", shared_x);
+
+#ifdef __APPLE__
+    sem_close(semaphore);
+    sem_unlink("sem0");
+#else
+    sem_destroy(semaphore);
+#endif
     
 
     return 0;
