@@ -46,7 +46,11 @@ int main() {
     int obj1 = 0x2842;
     long obj2 = 0x2842;
 
+
+    //MULTI-BYTE INTEGERS
+
     //Little-endian representation (least significant bytes are stored at the lowest addresses)
+    //(little-endian is the default option in my platform)
     printf("Little-endian representation\n");
     obj_repr(&obj1, sizeof(obj1)); //42 28 00 00 -> 4 bytes
     obj_repr(&obj2, sizeof(obj2)); //42 28 00 00 00 00 00 00 -> 8 bytes
@@ -61,7 +65,8 @@ int main() {
     obj_repr(&"12345", sizeof("12345")); //31 32 33 34 35 00 -> 6 bytes, including final null byte '\0'
 
     
-    //Alignment
+    //ALIGNMENT
+
     printf("alignof(int) %zu\n", alignof(int));
 
     struct X {
@@ -75,18 +80,31 @@ int main() {
     printf("bytes between consecutive elements: %p, %p\n", ((void *) (arrX+1)-(void*) arrX, (void *) (arrX+2)-(void*) (arrX+1)));
     obj_repr(&arrX, sizeof(arrX)); //01 00 00 00 61 00 00 00 02 00 00 00 62 00 00 00 03 00 00 00 63 00 00 00
 
+    
+    //SIGNED INTEGERS
+
+    //2's complement vs 1's complement
+    //(2's complement is the default option in my platform)
+    printf("in 2's complement, ~%d = %d\n", 1, ~1); //-2
+    printf("in 1's complement, ~%d = %d\n", 1, ~1+1); //-1
 
     //Sign extension: when data type is widened, sign bit is extended to fit new data type
     //This can be problematic if the data type is widened from signed to unsigned type
-    short signed_obj1 = -1000;
-    obj_repr(&signed_obj1, sizeof(signed_obj1)); //18 fc
-    printf("%d\n", signed_obj1); //-1000
-    int signed_obj2 = signed_obj1;
-    obj_repr(&signed_obj2, sizeof(signed_obj2)); //18 fc ff ff (sign bit is extended to fit new data type)  
-    printf("%d\n", signed_obj2); //-1000
 
+    //upcasting from short to int
+    short signed_obj1 = -1;
+    obj_repr(&signed_obj1, sizeof(signed_obj1)); //ff ff
+    printf("%d\n", signed_obj1); //-1 (2's complement)
+    int signed_obj2 = signed_obj1;
+    obj_repr(&signed_obj2, sizeof(signed_obj2)); //ff ff ff ff (sign bit is extended to fit new data type)  
+    printf("%d\n", signed_obj2); //-1 (2's complement)
+
+    //upcasting from short to unsigned int
     unsigned int signed_obj3 = signed_obj1;
-    obj_repr(&signed_obj3, sizeof(signed_obj3)); //18 fc ff ff (sign bit is extended to fit new data type)
-    printf("%u\n", signed_obj3); //4294966296
+    obj_repr(&signed_obj3, sizeof(signed_obj3)); //ff ff ff ff (sign bit is extended to fit new data type)
+    printf("%u\n", signed_obj3); //4294967295 (2^32 - 1)
+
+
+    //
 }
 

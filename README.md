@@ -44,7 +44,11 @@ Here's the alignment requirements for structs:
 - fields whose type is a multibyte integer type are aligned to their size (in bytes). For instance, an *int32_t* integer field’s beginning address is always divisible by four
  
 
-### Sign extension
+### Signed integers
+#### Negative integers
+
+Different platforms represent negative numbers in different ways, for instance: 2's complement vs 1's complement
+#### Sign extension
 
 When a data type is widened, sign bit is extended to fit the new data type
 
