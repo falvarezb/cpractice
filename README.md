@@ -3,7 +3,11 @@
 
 ## Object representation
 
-In general, the representation of C objects is platform-dependent. This section describes some of the main factors that determine how objects are represented. For more details, see [object represenation](https://en.cppreference.com/w/c/language/object)
+In general, the representation of C objects is platform-dependent. This section describes some of the main factors that determine how objects are represented. 
+
+For more details, see [object representation](https://en.cppreference.com/w/c/language/object).
+
+Check [objrepr.c](https://github.com/falvarezb/cpractice/blob/main/objrepr.c) for some examples.
 
 **Note**: the fact that object representation varies from platform to platform results in the need to define protocols to exchange information between different hosts when communicating over a network
 
