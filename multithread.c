@@ -10,7 +10,7 @@
 void* thread_body(void* arg) {
     pid_t pid = getpid();
     printf("pid=%d\n", pid);
-    printf("pid addr=%p\n", &pid);
+    printf("pid addr=%p\n", &pid); //must be an address in this thread's stack
     return NULL;
 }
 
