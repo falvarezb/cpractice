@@ -27,17 +27,29 @@ int main() {
     //Little-endian representation (least significant bytes are stored at the lowest addresses)
     //(little-endian is the default option in x86 platforms)
     printf("Little-endian representation\n");
-        
+
+    printf("obj1 = ");
     OBJ_REPR(obj1); //42 28 00 00 -> 4 bytes
+    printf("obj2 = ");
     OBJ_REPR(obj2); //42 28 00 00 00 00 00 00 -> 8 bytes
 
-    //Big-endian representation
+    //Big-endian representation (used in network protocols)
     printf("Big-endian representation\n");
     int obj1_bigend = htonl(obj1);
     long obj2_bigend = htonll(obj2);
-    OBJ_REPR(obj1_bigend); //00 00 28 42 -> 4 bytes    
-    OBJ_REPR(obj2_bigend); //00 00 00 00 00 00 28 42 -> 8 bytes    
+    printf("obj1 = ");
+    OBJ_REPR(obj1_bigend); //00 00 28 42 -> 4 bytes
+    printf("obj2 = ");
+    OBJ_REPR(obj2_bigend); //00 00 00 00 00 00 28 42 -> 8 bytes
 
+    // Format specifiers for printing integers always use big-endian representation
+    printf("Format specifiers for printing integers always use big-endian representation\n");
+    printf("obj1 = %x\n", obj1); // 28 42 (leading zeros are omitted as not padding has been specified)
+    printf("obj2 = %lx\n", obj2); // 28 42 (leading zeros are omitted as not padding has been specified)
+
+    //CHARACTER STRINGS    
+    printf("character strings representation\n");
+    printf("12345 = ");
     OBJ_REPR("12345"); //31 32 33 34 35 00 -> 6 bytes, including final null byte '\0'
 
 

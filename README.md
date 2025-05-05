@@ -55,3 +55,6 @@ When a data type is widened, sign bit is extended to fit the new data type
 This can be problematic if the data type is widened from signed to unsigned type
 
 
+## Print format specifiers
+
+https://cplusplus.com/reference/cstdio/printf/
